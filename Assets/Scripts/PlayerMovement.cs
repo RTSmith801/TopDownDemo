@@ -61,13 +61,36 @@ public class PlayerMovement : MonoBehaviour
         // This will default to matching movement controlls if look direction is not defined by user.
         if ((lookDirection.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f)))
         {
-            lastLookDirection.Set(movement.x, movement.y);
-            lastLookDirection.Normalize();
+            //lastLookDirection.Set(movement.x, movement.y);
+            //lastLookDirection.Normalize();
+            LockAxis(movement);
         }
 
         else if (lookDirection.magnitude > rightStickDeadZone)
         {
-            lastLookDirection = lookDirection;
+            //lastLookDirection = lookDirection;
+            LockAxis(lookDirection);
+        }
+        
+    }
+
+    private void LockAxis(Vector2 inputDirection)
+    {
+        // Attempting to lock look direction to one of four directions.  This should prevent triggering of multiple direction's attack animations.
+        if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.y))
+        {
+            lastLookDirection.Set(inputDirection.x, 0);
+        }
+
+        else if (Mathf.Abs(inputDirection.x) < Mathf.Abs(inputDirection.y))
+        {
+            lastLookDirection.Set(0, inputDirection.y);
+        }
+
+        else
+        {
+            // For debugging purposes.
+            print("You have encountered a wild problem");
         }
     }
 
@@ -95,6 +118,10 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerAttack()
     {
         print("Attack has been called");
+        if (isAttacking == true)
+        {
+            return;
+        }
         animator.SetTrigger("Attack");
         isAttacking = true;
     }
