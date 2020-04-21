@@ -6170,6 +6170,9 @@ TextureImporter:
   - first:
       213: 21304110
     second: tileset_2055
+  - first:
+      213: -8996569581096870067
+    second: tileset_2056
   externalObjects: {}
   serializedVersion: 11
   mipmaps:

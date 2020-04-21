@@ -69,13 +69,6 @@ public class PlayerMovement : MonoBehaviour
         {
             lastLookDirection = lookDirection;
         }
-
-        animator.SetFloat("Horizontal", lastLookDirection.x);
-        animator.SetFloat("Vertical", lastLookDirection.y);
-
-        // The purpose of setting the float of "Speed" to (movement.normalized * moveSpeed) is to allow for the character's
-        // walking animation to match the a joystick's input, or to allow speeds less than full to be recorded.
-        animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
     }
 
     private void FixedUpdate()
@@ -89,6 +82,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerMove()
     {
+        animator.SetFloat("Horizontal", lastLookDirection.x);
+        animator.SetFloat("Vertical", lastLookDirection.y);
+
+        // The purpose of setting the float of "Speed" to (movement.normalized * moveSpeed) is to allow for the character's
+        // walking animation to match the a joystick's input, or to allow speeds less than full to be recorded.
+        animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
+
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 
