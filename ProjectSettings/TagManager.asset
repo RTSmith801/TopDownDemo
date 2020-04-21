@@ -41,3 +41,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Colliders
+    uniqueID: 1638960211
+    locked: 0
+  - name: Background
+    uniqueID: 642252259
+    locked: 0
+  - name: MidGround
+    uniqueID: 8323937
+    locked: 0
+  - name: Interactable
+    uniqueID: 766536759
+    locked: 0
+  - name: Player
+    uniqueID: 2118086063
+    locked: 0
+  - name: Enemy
+    uniqueID: 946058983
+    locked: 0
+  - name: ForeGround
+    uniqueID: 2972790973
+    locked: 0

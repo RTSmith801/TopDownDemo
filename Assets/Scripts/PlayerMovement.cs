@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 lookDirection = new Vector2(0, 0);
     Vector2 lastLookDirection = new Vector2(0, -1);
     public bool isAttacking = false;
-
+    
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;    
     // A high deadzone allows for optional right joystick use.
@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();        
     }
 
     // Update is called once per frame
