@@ -7,9 +7,10 @@ public class PlayerMovement : MonoBehaviour
     public Animator animator;
 
     public float moveSpeed = 5f;
-    Vector2 movement;
+    Vector2 movement = new Vector2(0, 0);
     Vector2 lookDirection = new Vector2(0, 0);
-    Vector2 lastLookDirection = new Vector2(0, 0);
+    Vector2 lastLookDirection = new Vector2(0, -1);
+    public bool isAttacking = false;
 
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;    
@@ -26,6 +27,9 @@ public class PlayerMovement : MonoBehaviour
                 
         XBoxControllerInput.Gameplay.RightStick.performed += ctx => lookDirection = ctx.ReadValue<Vector2>();
         XBoxControllerInput.Gameplay.RightStick.canceled += ctx => lookDirection = Vector2.zero;
+
+        XBoxControllerInput.Gameplay.X.performed += ctx => PlayerAttack();
+        XBoxControllerInput.Gameplay.RightBumper.performed += ctx => PlayerAttack();
     }
 
     private void OnEnable()
@@ -48,15 +52,17 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //movement.x = Input.GetAxisRaw("Horizontal");
-        //movement.y = Input.GetAxisRaw("Vertical");        
+        GetControllerInput();
+    }
 
+    private void GetControllerInput()
+    {
         // Right Joystick will override look direction so character can face in a user defined direction while moving in a different direction.
         // This will default to matching movement controlls if look direction is not defined by user.
         if ((lookDirection.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f)))
         {
             lastLookDirection.Set(movement.x, movement.y);
-            lastLookDirection.Normalize();            
+            lastLookDirection.Normalize();
         }
 
         else if (lookDirection.magnitude > rightStickDeadZone)
@@ -74,6 +80,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Prevents movement while attacking.
+        if (!isAttacking)
+        {
+            PlayerMove();
+        }
+    }
+
+    private void PlayerMove()
+    {
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    private void PlayerAttack()
+    {
+        print("Attack has been called");
+        animator.SetTrigger("Attack");
+        isAttacking = true;
+    }
+
+    public void PlayerInterruption()
+    {
+        print("Player Interruption has been called");
+        animator.ResetTrigger("Attack");
+        isAttacking = false;
     }
 }

@@ -711,6 +711,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   animator: {fileID: 0}
   moveSpeed: 5
+  isAttacking: 0
 --- !u!212 &436684586
 SpriteRenderer:
   m_ObjectHideFlags: 0
