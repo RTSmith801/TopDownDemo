@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerAttack()
     {
-        print("Attack has been called");
+        print("Attack has been called with look direction = " + lastLookDirection.x + ", " + lastLookDirection.y);
         if (isAttacking == true)
         {
             return;
@@ -128,7 +128,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void PlayerInterruption()
     {
-        print("Player Interruption has been called");
         animator.ResetTrigger("Attack");
         isAttacking = false;
     }
