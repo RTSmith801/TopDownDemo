@@ -5,32 +5,58 @@ using Cinemachine;
 
 public class RoomProperties : MonoBehaviour
 {
+    GameManager gm;    
     public GameObject virtualCamera;
     public SpriteRenderer blackOutCanvas;
-    private Color transparent = new Color(255f, 255f, 255f, 0f);
-    private Color opaque = new Color(255f, 255f, 255f, 1f);
+    private Color transparent = new Color(1f, 1f, 1f, 0f);
+    private Color opaque = new Color(1f, 1f, 1f, 1f);
+    private Color startingColor;    
 
     // Start is called before the first frame update
     void Awake()
-    {   
-        // Set reference to each room's camera, and then disable to save resources.
-        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;
-        virtualCamera.SetActive(false);
-
-        blackOutCanvas = GetComponent<SpriteRenderer>();
-        blackOutCanvas.color = opaque;
+    {        
+        Assignments();
     }
 
+    private void Assignments()
+    {
+        gm = FindObjectOfType<GameManager>();
+        blackOutCanvas = GetComponent<SpriteRenderer>();
+        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;
+    }
+
+    private void Start()
+    {
+        blackOutCanvas.color = opaque;
+        virtualCamera.SetActive(false);                
+    }
+    
     public void LeaveRoom()
     {
-        virtualCamera.SetActive(false);
-        blackOutCanvas.color = opaque;
+        virtualCamera.SetActive(false);        
+        startingColor = blackOutCanvas.color;
+        StartCoroutine(FadeBlackOutCanvas(startingColor, opaque, gm.fadeSpeed));
     }
 
     public void EnterRoom()
     {
-        virtualCamera.SetActive(true);
-        blackOutCanvas.color = transparent;
+        virtualCamera.SetActive(true);        
+        startingColor = blackOutCanvas.color;
+        StartCoroutine(FadeBlackOutCanvas(startingColor, transparent, gm.fadeSpeed));
+    }
+
+    IEnumerator FadeBlackOutCanvas(Color startingColor, Color fadeToColor, float fadeSpeed)
+    {        
+        float currentTime = 0f;
+        while (startingColor != fadeToColor)
+        {
+            currentTime += Time.deltaTime;
+            blackOutCanvas.color = Color.Lerp(startingColor, fadeToColor, (currentTime / fadeSpeed));
+            yield return null;
+        }
+
+        StopCoroutine(FadeBlackOutCanvas(startingColor, fadeToColor, fadeSpeed));
+        
     }
 
 }
