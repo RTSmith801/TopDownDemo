@@ -5,7 +5,7 @@ using UnityEngine;
 public class SceneTransition : MonoBehaviour
 {
     // Used to move the player from scene/room to another.
-    public Vector3 playerChange;
+    //public Vector3 playerChange;
     public GameObject currentRoom;
     public GameObject nextRoom;
 
@@ -25,10 +25,9 @@ public class SceneTransition : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("Player"))
-        {
-            other.transform.position += playerChange;
-            currentRoom.GetComponent<RoomProperties>().LeaveRoom();
-            nextRoom.GetComponent<RoomProperties>().EnterRoom();
+        {   
+            currentRoom.GetComponent<RoomProperties>().LeaveRoom(currentRoom);
+            nextRoom.GetComponent<RoomProperties>().EnterRoom(nextRoom);
         }
     }
 }
