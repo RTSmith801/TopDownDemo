@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {    
     public GameObject currentRoom;
     public GameObject lastRoom;
-    public float fadeSpeed = 1f;
+    public float fadeSpeed = .7f;
     public GameObject player;
     public List<GameObject> enemies;
     public List<GameObject> sceneTransitions;
@@ -49,8 +48,9 @@ public class GameManager : MonoBehaviour
         currentRoom.GetComponent<RoomProperties>().EnterRoom(currentRoom);
     }
 
-    public void RoomChange(GameObject currentRoom)
+    public void RoomChange(GameObject roomEntered)
     {
+        currentRoom = roomEntered;
         player.transform.SetParent(null);
         player.transform.SetParent(currentRoom.transform);
 
@@ -58,15 +58,38 @@ public class GameManager : MonoBehaviour
         {
             TurnOffSceneTransitions();
         }
-
+        DisableEnemies();
+        EnableEnemies();
         Invoke("TurnOnSceneTransitions", fadeSpeed);
-    }   
+    }
+
+    public void DisableEnemies()
+    {
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i].transform.parent.gameObject != currentRoom)
+            {
+                enemies[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void EnableEnemies()
+    {
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i].transform.parent.gameObject == currentRoom)
+            {
+                enemies[i].gameObject.SetActive(true);
+            }
+        }
+    }
 
     public void TurnOffSceneTransitions()
     {
         for (int i = 0; i < sceneTransitions.Count; i++)
         {
-            if (sceneTransitions[i].transform.parent == lastRoom)
+            if (sceneTransitions[i].transform.parent.gameObject != currentRoom)
             {
                 sceneTransitions[i].SetActive(false);
             }
@@ -77,7 +100,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < sceneTransitions.Count; i++)
         {
-            if (sceneTransitions[i].transform.parent == currentRoom)
+            if (sceneTransitions[i].transform.parent.gameObject == currentRoom)
             {
                 sceneTransitions[i].SetActive(true);
             }

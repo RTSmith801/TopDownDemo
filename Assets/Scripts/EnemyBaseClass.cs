@@ -9,8 +9,7 @@ public class EnemyBaseClass : MonoBehaviour
     public int baseAttack;
     public float moveSpeed;
 
-    public GameObject currentRoom;
-    public bool playerInCurrentRoom = false;
+    public GameObject currentRoom;    
 
     public Rigidbody2D rb;
     Vector2 movement = new Vector2(0, 0);
@@ -49,7 +48,7 @@ public class EnemyBaseClass : MonoBehaviour
 
     void CheckDistanceToTarget()
     {       
-        if (playerInCurrentRoom && Vector2.Distance(enemyTarget.position, transform.position) <= chaseRadius)
+        if (Vector2.Distance(enemyTarget.position, transform.position) <= chaseRadius)
         {
             enemmyTargetWithinRadius = true;
             movement = enemyTarget.position - transform.position;

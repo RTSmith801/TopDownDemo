@@ -79,12 +79,7 @@ public class PlayerMovement : MonoBehaviour
         else if (lookDirection.magnitude > rightStickDeadZone)
         {         
             LockAxis(lookDirection);
-        }
-
-        else
-        {
-            print("You have encountered a controller input issue");
-        }
+        }      
         
     }
 
@@ -105,8 +100,7 @@ public class PlayerMovement : MonoBehaviour
 
         else
         {
-            // For debugging purposes.
-            print("You have encountered a wild problem");
+            lastLookDirection.Normalize();
         }
     }
 
@@ -166,8 +160,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void PlayerAttack()
-    {
-        print("Attack has been called with look direction = " + lastLookDirection.x + ", " + lastLookDirection.y);
+    {        
         if (isAttacking == true)
         {
             return;
