@@ -8,19 +8,31 @@ public class EnemyBaseClass : MonoBehaviour
     public string enemyName;
     public int baseAttack;
     public float moveSpeed;
+    public float chaseRadius;
+    public float attackRadius;
+    public float attackSpeed;
 
     GameObject currentRoom;    
     Rigidbody2D rb;
     CircleCollider2D col;
     Vector2 movement = new Vector2(0, 0);
+    public Vector2 spawnPos = new Vector2();
     public Transform enemyTarget;
-    public float chaseRadius;
     public bool enemmyTargetWithinRadius = false;
+    public bool isAlive = true;
 
-    private void Start()
+    private void Awake()
     {
         StartingAssignments();
         BaseStats();
+    }
+
+    private void OnEnable()
+    {
+        if (isAlive && spawnPos != null)
+        {
+            transform.position = spawnPos;
+        }
     }
 
     protected virtual void StartingAssignments()
@@ -29,6 +41,8 @@ public class EnemyBaseClass : MonoBehaviour
         currentRoom = transform.parent.gameObject;
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CircleCollider2D>();
+        spawnPos = transform.position;
+        print("enemy spawy position = " + spawnPos);
     } 
 
     protected virtual void BaseStats()
@@ -39,6 +53,8 @@ public class EnemyBaseClass : MonoBehaviour
         baseAttack = 1;
         moveSpeed = 1f;
         chaseRadius = 4f;
+        attackRadius = 1f;
+        attackSpeed = 2f;
     }
 
     private void Update()
@@ -52,12 +68,25 @@ public class EnemyBaseClass : MonoBehaviour
         if (Vector2.Distance(enemyTarget.position, transform.position) <= chaseRadius)
         {
             enemmyTargetWithinRadius = true;
-            movement = enemyTarget.position - transform.position;
+            if (Vector2.Distance(enemyTarget.position, transform.position) >= attackRadius)
+            {
+                movement = enemyTarget.position - transform.position;
+            }
+
+            else
+            {
+                Attack();
+            }
         }
         else
         {
             movement = Vector2.zero;
         }
+    }
+
+    private static void Attack()
+    {
+        print("attack");
     }
 
     private void FixedUpdate()
@@ -79,16 +108,19 @@ public class EnemyBaseClass : MonoBehaviour
         {
             print("player has hit enemy");
         }
+    }
 
-        else if (other.gameObject.CompareTag("Player"))
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
         {
             print("enemy has hit player");
-        }
+        }        
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, chaseRadius);
     }
 

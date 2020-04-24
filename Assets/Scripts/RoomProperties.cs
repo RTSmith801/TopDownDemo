@@ -77,7 +77,7 @@ public class RoomProperties : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            print("OnTriggerEnter2D was called on " + other.gameObject.name + " , in " + gameObject.name);
+            //print("OnTriggerEnter2D was called on " + other.gameObject.name + " , in " + gameObject.name);
             EnterRoom();
         }
     }    
@@ -86,7 +86,7 @@ public class RoomProperties : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            print("OnTriggerExit2D was called on " + other.gameObject.name + " , in " + gameObject.name);
+            //print("OnTriggerExit2D was called on " + other.gameObject.name + " , in " + gameObject.name);
             LeaveRoom();
         }
     }
