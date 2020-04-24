@@ -6,13 +6,13 @@ public class SceneTransition : MonoBehaviour
 {
     // Used to move the player from scene/room to another.
     //public Vector3 playerChange;
-    public GameObject currentRoom;
+    GameObject currentRoom;
     public GameObject nextRoom;
 
     private void Start()
     {
         currentRoom = this.transform.parent.gameObject;
-        if(currentRoom == null)
+        if (currentRoom == null)
         {
             print("An unparented scene transition exists");
         }
@@ -24,7 +24,7 @@ public class SceneTransition : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {   
             currentRoom.GetComponent<RoomProperties>().LeaveRoom(currentRoom);
             nextRoom.GetComponent<RoomProperties>().EnterRoom(nextRoom);

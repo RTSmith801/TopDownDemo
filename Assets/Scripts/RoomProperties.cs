@@ -10,10 +10,8 @@ public class RoomProperties : MonoBehaviour
     public SpriteRenderer blackOutCanvas;
     private Color transparent = new Color(1f, 1f, 1f, 0f);
     private Color opaque = new Color(1f, 1f, 1f, 1f);
-    private Color startingColor;
-    public List<GameObject> sceneTransitions;
-
-    // Start is called before the first frame update
+    private Color startingColor;    
+        
     void Awake()
     {        
         Assignments();
@@ -23,60 +21,29 @@ public class RoomProperties : MonoBehaviour
     {
         gm = FindObjectOfType<GameManager>();
         blackOutCanvas = GetComponent<SpriteRenderer>();
-        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;
-
-        // Looks through each child in the room. There's probably a more cost effective way of performing this.
-        Transform[] allChildren = gameObject.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < allChildren.Length; i++)
-        {
-            if (allChildren[i].gameObject.tag == "SceneTransition")
-            {
-                sceneTransitions.Add(allChildren[i].gameObject);
-            }
-        }
+        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;               
     }
 
     private void Start()
     {
         blackOutCanvas.color = opaque;
-        virtualCamera.SetActive(false);
-        TurnOffSceneTransitions();
-    }
-
-    private void TurnOffSceneTransitions()
-    {
-        for (int i = 0; i < sceneTransitions.Count; i++)
-        {
-            sceneTransitions[i].SetActive(false);
-        }
-    }
-
-    private void TurnOnSceneTransitions()
-    {
-        for (int i = 0; i < sceneTransitions.Count; i++)
-        {
-            sceneTransitions[i].SetActive(true);
-        }
+        virtualCamera.SetActive(false);        
     }
 
     public void LeaveRoom(GameObject lastRoom)
     {
-        print("LeaveRoom has been called in " + transform.gameObject.name);
-        virtualCamera.SetActive(false);        
-        startingColor = blackOutCanvas.color;
-        TurnOffSceneTransitions();
-        StartCoroutine(FadeBlackOutCanvas(startingColor, opaque, gm.fadeSpeed));
         gm.lastRoom = lastRoom;
+        virtualCamera.SetActive(false);        
+        startingColor = blackOutCanvas.color;        
+        StartCoroutine(FadeBlackOutCanvas(startingColor, opaque, gm.fadeSpeed));
     }
 
-    public void EnterRoom(GameObject currentRoom)
-    {
-        print("EnterRoom has been called in " + transform.gameObject.name);
+    public void EnterRoom(GameObject roomEntered)
+    {        
+        gm.RoomChange(roomEntered);        
         virtualCamera.SetActive(true);        
-        startingColor = blackOutCanvas.color;
-        Invoke("TurnOnSceneTransitions", gm.fadeSpeed);
+        startingColor = blackOutCanvas.color;        
         StartCoroutine(FadeBlackOutCanvas(startingColor, transparent, gm.fadeSpeed));
-        gm.currentRoom = currentRoom;
     }
 
     IEnumerator FadeBlackOutCanvas(Color startingColor, Color fadeToColor, float fadeSpeed)

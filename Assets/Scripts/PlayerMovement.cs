@@ -7,19 +7,24 @@ public class PlayerMovement : MonoBehaviour
     public Animator animator;
 
     public float moveSpeed = 5f;
+    public float runSpeedMultiplier = 1.5f;
     Vector2 movement = new Vector2(0, 0);
     Vector2 lookDirection = new Vector2(0, 0);
     Vector2 lastLookDirection = new Vector2(0, -1);
+    public string lastLookDirectionDefined = "South";
     public bool isAttacking = false;
+    public bool isRunning = false;
     
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;    
     // A high deadzone allows for optional right joystick use.
-    float rightStickDeadZone = .9f;
+    float rightStickDeadZone = .5f;
 
 
     private void Awake()
     {
+        // List all input options here.
+
         XBoxControllerInput = new PlayerControls();
 
         XBoxControllerInput.Gameplay.LeftStick.performed += ctx => movement = ctx.ReadValue<Vector2>();
@@ -30,6 +35,12 @@ public class PlayerMovement : MonoBehaviour
 
         XBoxControllerInput.Gameplay.X.performed += ctx => PlayerAttack();
         XBoxControllerInput.Gameplay.RightBumper.performed += ctx => PlayerAttack();
+
+        XBoxControllerInput.Gameplay.B.performed += ctx => isRunning = true;
+        XBoxControllerInput.Gameplay.B.canceled += ctx => isRunning = false;
+
+        XBoxControllerInput.Gameplay.LeftBumper.performed += ctx => isRunning = true;
+        XBoxControllerInput.Gameplay.LeftBumper.canceled += ctx => isRunning = false;
     }
 
     private void OnEnable()
@@ -49,10 +60,11 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();        
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         GetControllerInput();
+        LastLookDirectionDefined();
     }
 
     private void GetControllerInput()
@@ -60,16 +72,18 @@ public class PlayerMovement : MonoBehaviour
         // Right Joystick will override look direction so character can face in a user defined direction while moving in a different direction.
         // This will default to matching movement controlls if look direction is not defined by user.
         if ((lookDirection.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f)))
-        {
-            //lastLookDirection.Set(movement.x, movement.y);
-            //lastLookDirection.Normalize();
+        {   
             LockAxis(movement);
         }
 
         else if (lookDirection.magnitude > rightStickDeadZone)
-        {
-            //lastLookDirection = lookDirection;
+        {         
             LockAxis(lookDirection);
+        }
+
+        else
+        {
+            print("You have encountered a controller input issue");
         }
         
     }
@@ -80,17 +94,47 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.y))
         {
             lastLookDirection.Set(inputDirection.x, 0);
+            lastLookDirection.Normalize();
         }
 
         else if (Mathf.Abs(inputDirection.x) < Mathf.Abs(inputDirection.y))
         {
             lastLookDirection.Set(0, inputDirection.y);
+            lastLookDirection.Normalize();
         }
 
         else
         {
             // For debugging purposes.
             print("You have encountered a wild problem");
+        }
+    }
+
+    void LastLookDirectionDefined()
+    {
+        if (lastLookDirection == new Vector2(0, 1))
+        {
+            lastLookDirectionDefined = "North";            
+        }
+
+        else if (lastLookDirection == new Vector2(0, -1))
+        {
+            lastLookDirectionDefined = "South";
+        }
+
+        else if (lastLookDirection == new Vector2(1, 0))
+        {
+            lastLookDirectionDefined = "East";
+        }
+
+        else if (lastLookDirection == new Vector2(-1, 0))
+        {
+            lastLookDirectionDefined = "West";
+        }
+
+        else
+        {
+            lastLookDirectionDefined = "Undefined = (" + lastLookDirection.x + ", " + lastLookDirection.y + ")";
         }
     }
 
@@ -108,11 +152,17 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Horizontal", lastLookDirection.x);
         animator.SetFloat("Vertical", lastLookDirection.y);
 
-        // The purpose of setting the float of "Speed" to (movement.normalized * moveSpeed) is to allow for the character's
-        // walking animation to match the a joystick's input, or to allow speeds less than full to be recorded.
-        animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
+        if (isRunning == false)
+        {
+            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
+        }
 
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        else if (isRunning == true)
+        {   
+            rb.MovePosition(rb.position + movement * (moveSpeed * runSpeedMultiplier) * Time.fixedDeltaTime);
+            animator.SetFloat("Speed", (movement.magnitude * (moveSpeed * runSpeedMultiplier) / moveSpeed));
+        }
     }
 
     private void PlayerAttack()
