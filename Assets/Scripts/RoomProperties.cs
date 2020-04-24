@@ -19,35 +19,49 @@ public class RoomProperties : MonoBehaviour
 
     private void Assignments()
     {
-        gm = FindObjectOfType<GameManager>();
+        gm = FindObjectOfType<GameManager>();        
         blackOutCanvas = GetComponent<SpriteRenderer>();
-        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;               
-    }
-
-    private void Start()
-    {
         blackOutCanvas.color = opaque;
+        virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>().gameObject;               
         virtualCamera.SetActive(false);        
     }
 
-    public void LeaveRoom(GameObject lastRoom)
+    //public void LeaveRoom(GameObject lastRoom)
+    //{
+    //    gm.lastRoom = lastRoom;
+    //    virtualCamera.SetActive(false);        
+    //    startingColor = blackOutCanvas.color;        
+    //    StartCoroutine(FadeBlackOutCanvas(startingColor, opaque, gm.fadeSpeed));
+    //}
+
+    //public void EnterRoom(GameObject roomEntered)
+    //{        
+    //    gm.RoomChange(roomEntered);        
+    //    virtualCamera.SetActive(true);        
+    //    startingColor = blackOutCanvas.color;        
+    //    StartCoroutine(FadeBlackOutCanvas(startingColor, transparent, gm.fadeSpeed));
+    //}
+
+    public void LeaveRoom()
     {
-        gm.lastRoom = lastRoom;
-        virtualCamera.SetActive(false);        
-        startingColor = blackOutCanvas.color;        
+        gm.lastRoom = gameObject;
+        virtualCamera.SetActive(false);
+        startingColor = blackOutCanvas.color;
+        StopAllCoroutines();
         StartCoroutine(FadeBlackOutCanvas(startingColor, opaque, gm.fadeSpeed));
     }
 
-    public void EnterRoom(GameObject roomEntered)
-    {        
-        gm.RoomChange(roomEntered);        
-        virtualCamera.SetActive(true);        
-        startingColor = blackOutCanvas.color;        
+    public void EnterRoom()
+    {
+        gm.RoomChange(gameObject);
+        virtualCamera.SetActive(true);
+        startingColor = blackOutCanvas.color;
+        StopAllCoroutines();
         StartCoroutine(FadeBlackOutCanvas(startingColor, transparent, gm.fadeSpeed));
     }
 
     IEnumerator FadeBlackOutCanvas(Color startingColor, Color fadeToColor, float fadeSpeed)
-    {
+    {   
         float currentTime = 0f;
         while (blackOutCanvas.color != fadeToColor)
         {   
@@ -57,7 +71,23 @@ public class RoomProperties : MonoBehaviour
         }
 
         StopCoroutine(FadeBlackOutCanvas(startingColor, fadeToColor, fadeSpeed));
-        
-    }
+    }   
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            print("OnTriggerEnter2D was called on " + other.gameObject.name + " , in " + gameObject.name);
+            EnterRoom();
+        }
+    }    
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            print("OnTriggerExit2D was called on " + other.gameObject.name + " , in " + gameObject.name);
+            LeaveRoom();
+        }
+    }
 }

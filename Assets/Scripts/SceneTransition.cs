@@ -25,9 +25,11 @@ public class SceneTransition : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
-        {   
-            currentRoom.GetComponent<RoomProperties>().LeaveRoom(currentRoom);
-            nextRoom.GetComponent<RoomProperties>().EnterRoom(nextRoom);
+        {
+            //currentRoom.GetComponent<RoomProperties>().LeaveRoom(currentRoom);
+            //nextRoom.GetComponent<RoomProperties>().EnterRoom(nextRoom);
+            currentRoom.GetComponent<RoomProperties>().LeaveRoom();
+            nextRoom.GetComponent<RoomProperties>().EnterRoom();
         }
     }
 }

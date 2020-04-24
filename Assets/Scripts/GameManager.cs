@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
     public GameObject currentRoom;
     public GameObject lastRoom;
     public float fadeSpeed = .7f;
-    public GameObject player;
+    GameObject player;
     public List<GameObject> enemies;
     public List<GameObject> sceneTransitions;
 
@@ -43,9 +43,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        RoomChange(currentRoom);
-        TurnOffSceneTransitions();        
-        currentRoom.GetComponent<RoomProperties>().EnterRoom(currentRoom);
+        //RoomChange(currentRoom);
+        TurnOffSceneTransitions();
+        //currentRoom.GetComponent<RoomProperties>().EnterRoom(currentRoom);        
     }
 
     public void RoomChange(GameObject roomEntered)
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         player.transform.SetParent(null);
         player.transform.SetParent(currentRoom.transform);
 
-        if (lastRoom != null)
+        if (lastRoom != null && lastRoom != currentRoom)
         {
             TurnOffSceneTransitions();
         }

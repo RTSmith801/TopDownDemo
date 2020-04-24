@@ -9,9 +9,9 @@ public class EnemyBaseClass : MonoBehaviour
     public int baseAttack;
     public float moveSpeed;
 
-    public GameObject currentRoom;    
-
-    public Rigidbody2D rb;
+    GameObject currentRoom;    
+    Rigidbody2D rb;
+    CircleCollider2D col;
     Vector2 movement = new Vector2(0, 0);
     public Transform enemyTarget;
     public float chaseRadius;
@@ -28,6 +28,7 @@ public class EnemyBaseClass : MonoBehaviour
         enemyTarget = GameObject.FindWithTag("Player").transform;
         currentRoom = transform.parent.gameObject;
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<CircleCollider2D>();
     } 
 
     protected virtual void BaseStats()
@@ -70,6 +71,19 @@ public class EnemyBaseClass : MonoBehaviour
             return;
 
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("PlayerWeapon"))
+        {
+            print("player has hit enemy");
+        }
+
+        else if (other.gameObject.CompareTag("Player"))
+        {
+            print("enemy has hit player");
+        }
     }
 
     private void OnDrawGizmosSelected()
