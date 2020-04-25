@@ -6,7 +6,7 @@ public class EnemyBaseClass : MonoBehaviour
 {    
     public int enemyHealth;
     public string enemyName;
-    public int baseAttack;
+    public int attackDammage;
     public float moveSpeed;
     public float chaseRadius;
     public float attackRadius;
@@ -20,6 +20,12 @@ public class EnemyBaseClass : MonoBehaviour
     public Transform enemyTarget;
     public bool enemmyTargetWithinRadius = false;
     public bool isAlive = true;
+
+    public SpriteRenderer sr;
+    public Material matDefault;
+    public Material matFlashWhite;
+    public float flashWhiteSpeed = 0.05f;
+    public float flashWhiteDurration = .5f;
 
     private void Awake()
     {
@@ -42,15 +48,36 @@ public class EnemyBaseClass : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CircleCollider2D>();
         spawnPos = transform.position;
-        print("enemy spawy position = " + spawnPos);
-    } 
+        //print("enemy spawy position = " + spawnPos);
+
+        sr = GetComponent<SpriteRenderer>();
+        matDefault = sr.material;
+        matFlashWhite = Resources.Load("FlashWhite", typeof(Material)) as Material;
+        //Invoke ("Test", 2f);
+    }
+
+    private void Test()
+    {
+        sr.material = null;
+        sr.material = matFlashWhite;
+        print("sr.material = " + sr.material);
+        Invoke("Test2", 2f);
+    }
+
+    private void Test2()
+    {
+        sr.material = null;
+        sr.material = matDefault;
+        print("sr.material = " + sr.material);
+        Invoke("Test", 2f);
+    }
 
     protected virtual void BaseStats()
     {
         // Base stats
         enemyHealth = 3;
         enemyName = "Unidentified Enemy";
-        baseAttack = 1;
+        attackDammage = 1;
         moveSpeed = 1f;
         chaseRadius = 4f;
         attackRadius = 1f;
@@ -86,7 +113,7 @@ public class EnemyBaseClass : MonoBehaviour
 
     private static void Attack()
     {
-        print("attack");
+        // Attack goes here
     }
 
     private void FixedUpdate()
@@ -106,7 +133,8 @@ public class EnemyBaseClass : MonoBehaviour
     {
         if (other.gameObject.CompareTag("PlayerWeapon"))
         {
-            print("player has hit enemy");
+            //print("player has hit enemy");
+            TakeDamage();
         }
     }
 
@@ -114,7 +142,8 @@ public class EnemyBaseClass : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            print("enemy has hit player");
+            //print("enemy has hit player");
+            other.gameObject.GetComponent<PlayerMovement>().PlayerTakeDamage(attackDammage);
         }        
     }
 
@@ -122,6 +151,34 @@ public class EnemyBaseClass : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, chaseRadius);
+    }
+
+    void TakeDamage()
+    {
+        StartCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
+    }
+
+    IEnumerator FlashWhite(Material matDefault, Material matFlashWhite, float flashWhiteSpeed, float flashWhiteDurration)
+    {
+        float flashWhiteDurrationTimer = 0f;
+        float flashWhiteSpeedTimer = flashWhiteSpeed;
+        while (flashWhiteDurrationTimer <= flashWhiteDurration)
+        {
+            flashWhiteDurrationTimer += Time.deltaTime;
+            flashWhiteSpeedTimer += Time.deltaTime;
+            if (flashWhiteSpeedTimer >= flashWhiteSpeed)
+            {
+                if (sr.material == matDefault)
+                    sr.material = matFlashWhite;
+                else
+                    sr.material = matDefault;
+                flashWhiteSpeedTimer = 0f;
+                print("sr.material = " + sr.material);
+            }
+            yield return null;
+        }
+        sr.material = matDefault;
+        StopCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
     }
 
 }

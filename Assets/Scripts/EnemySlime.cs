@@ -10,7 +10,7 @@ public class EnemySlime : EnemyBaseClass
         // Base stats
         enemyHealth = 3;
         enemyName = "Slime";
-        baseAttack = 1;
+        attackDammage = 1;
         moveSpeed = 1f;
         chaseRadius = 4f;
         attackRadius = 1f;

@@ -6,9 +6,10 @@ public class GameManager : MonoBehaviour
     public GameObject currentRoom;
     public GameObject lastRoom;
     public float fadeSpeed = .7f;
-    GameObject player;
     public List<GameObject> enemies;
     public List<GameObject> sceneTransitions;
+        
+    public GameObject player;   
 
     void Awake()
     {

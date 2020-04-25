@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
@@ -6,15 +7,32 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     public Animator animator;
 
-    public float moveSpeed = 5f;
-    public float runSpeedMultiplier = 1.5f;
     Vector2 movement = new Vector2(0, 0);
     Vector2 lookDirection = new Vector2(0, 0);
     Vector2 lastLookDirection = new Vector2(0, -1);
     public string lastLookDirectionDefined = "South";
     public bool isAttacking = false;
     public bool isRunning = false;
-    
+    public bool isAlive = true;
+
+    [Header("Player Stats")]
+    public bool isInvincible = false;
+    public int playerHealthMax = 3;
+    public int playerHealthCurrent;
+    public int playerAttackDamage = 1;
+    public float moveSpeed = 5f;
+    public float runSpeedMultiplier = 1.5f;
+
+    public SpriteRenderer sr;
+    public Material matDefault;
+    public Material matFlashWhite;
+    public Material matDestination;
+    public float flashWhiteSpeed = 0.5f;
+    public float flashWhiteDurration = 3f;
+    public bool takingDamage = false;
+    public float flashWhiteDurrationTimer = 0;
+    public float flashWhiteSpeedTimer = 3;
+
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;    
     // A high deadzone allows for optional right joystick use.
@@ -57,14 +75,44 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();        
+        animator = GetComponent<Animator>();
+        isAlive = true;
+        playerHealthCurrent = playerHealthMax;
+        sr = GetComponent<SpriteRenderer>();
+        matDefault = sr.material;
+        matDestination = matDefault;
+        matFlashWhite = Resources.Load("FlashWhite", typeof(Material)) as Material;
+        //Invoke ("Test", 2f);
     }
 
-    
+    private void Test()
+    {
+        sr.material = null;
+        sr.material = matFlashWhite;
+        print("sr.material = " + sr.material);
+        Invoke("Test2", 2f);
+    }
+
+    private void Test2()
+    {
+        sr.material = null;
+        sr.material = matDefault;
+        print("sr.material = " + sr.material);
+        Invoke("Test", 2f);
+    }
+
     void Update()
     {
         GetControllerInput();
         LastLookDirectionDefined();
+
+        if (takingDamage == true)
+        {
+            // Timers 
+            //flashWhiteDurrationTimer += Time.deltaTime;
+            //flashWhiteSpeedTimer += Time.deltaTime;
+            FlashWhite();
+        }
     }
 
     private void GetControllerInput()
@@ -139,6 +187,10 @@ public class PlayerMovement : MonoBehaviour
         {
             PlayerMove();
         }
+        else if (isAttacking)
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
 
     private void PlayerMove()
@@ -173,5 +225,94 @@ public class PlayerMovement : MonoBehaviour
     {
         animator.ResetTrigger("Attack");
         isAttacking = false;
+    }
+
+    public void PlayerTakeDamage(int damageAmount)
+    {
+        if (!isInvincible)
+        {
+            isInvincible = true;
+            takingDamage = true;
+            print("Start = sr.material = " + sr.material);
+            flashWhiteDurrationTimer = 0;
+            playerHealthCurrent -= damageAmount;
+            //StartCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
+        }
+    }
+
+    //IEnumerator FlashWhite(Material matDefault, Material matFlashWhite, float flashWhiteSpeed, float flashWhiteDurration)
+    //{
+    //    float flashWhiteDurrationTimer = 0f;
+    //    float flashWhiteSpeedTimer = flashWhiteSpeed;
+    //    while (flashWhiteDurrationTimer <= flashWhiteDurration)
+    //    {
+    //        flashWhiteDurrationTimer += Time.deltaTime;
+    //        flashWhiteSpeedTimer += Time.deltaTime;
+    //        if (flashWhiteSpeedTimer >= flashWhiteSpeed)
+    //        {                
+    //            if (sr.material == matDefault)
+    //                sr.material = matFlashWhite;
+    //            else
+    //                sr.material = matDefault;
+    //            flashWhiteSpeedTimer = 0f;
+    //            print("sr.material = " + sr.material);
+    //        }
+    //        yield return null;
+    //    }
+    //    sr.material = matDefault;
+    //    isInvincible = false;
+    //    StopCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
+    //}
+
+    private void LateUpdate()
+    {
+        //animator.SetFloat("Horizontal", lastLookDirection.x);
+        //animator.SetFloat("Vertical", lastLookDirection.y);
+        //animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
+        sr.material = matDestination;
+
+        //// Created a coroutine in LateUpate to override animations created in Mechanim
+        //if (takingDamage == true)
+        //{
+        //    FlashWhite();
+        //}
+    }  
+    
+    void FlashWhite()
+    {
+        flashWhiteDurrationTimer += Time.deltaTime;
+
+        if (flashWhiteDurrationTimer <= flashWhiteDurration)
+        {
+            flashWhiteSpeedTimer += Time.deltaTime;
+
+            if (flashWhiteSpeedTimer >= flashWhiteSpeed)
+            {
+                if (matDestination == matDefault)
+                {
+                    matDestination = matFlashWhite;
+                }
+
+                else
+                {
+                    matDestination = matDefault;
+                }
+
+                print("sr.material = " + sr.material);
+                flashWhiteSpeedTimer = 0f;
+                return;
+            }
+        }
+
+        else if (flashWhiteDurrationTimer > flashWhiteDurration)
+        {
+            takingDamage = false;
+            isInvincible = false;
+            matDestination = matDefault;
+            flashWhiteDurrationTimer = 0f;
+            flashWhiteSpeedTimer = flashWhiteSpeed;
+            print("End = sr.material = " + sr.material);
+        }               
+
     }
 }

@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerAttackRight
+  m_Name: PlayerAttackNorth
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -33,17 +33,17 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: AttackRight
+    path: AttackUp
     classID: 60
     script: {fileID: 0}
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: b169a31864b16462e9ff604ccedcfe94, type: 3}
+      value: {fileID: 21300000, guid: c5e89b89cb79f4da3a7fa470eeaf9cf4, type: 3}
     - time: 0.083333336
-      value: {fileID: 21300000, guid: 86a9d6304364d47cab8372ea8234a2b2, type: 3}
+      value: {fileID: 21300000, guid: c413865570f3e45969d9a4dfdc42afd1, type: 3}
     - time: 0.16666667
-      value: {fileID: 21300000, guid: 83925fb80dc64419e94df7e2c4f7b0da, type: 3}
+      value: {fileID: 21300000, guid: 25b790344a8464b1cb8fe2d555832532, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -56,7 +56,7 @@ AnimationClip:
     - time: 0.16666667
       value: {fileID: 21300000, guid: d342eb74e1cc54d7e84ad593caa5ac35, type: 3}
     attribute: m_Sprite
-    path: AttackRight
+    path: AttackUp
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -67,7 +67,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 1504273457
+      path: 1443585033
       attribute: 3305885265
       script: {fileID: 0}
       typeID: 60
@@ -81,16 +81,16 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     - serializedVersion: 2
-      path: 1504273457
+      path: 1443585033
       attribute: 0
       script: {fileID: 0}
       typeID: 212
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 21300000, guid: b169a31864b16462e9ff604ccedcfe94, type: 3}
-    - {fileID: 21300000, guid: 86a9d6304364d47cab8372ea8234a2b2, type: 3}
-    - {fileID: 21300000, guid: 83925fb80dc64419e94df7e2c4f7b0da, type: 3}
+    - {fileID: 21300000, guid: c5e89b89cb79f4da3a7fa470eeaf9cf4, type: 3}
+    - {fileID: 21300000, guid: c413865570f3e45969d9a4dfdc42afd1, type: 3}
+    - {fileID: 21300000, guid: 25b790344a8464b1cb8fe2d555832532, type: 3}
     - {fileID: 21300000, guid: f2bcdb082b2194605a1323a4ed99fa55, type: 3}
     - {fileID: 21300000, guid: eb77509832096431eb5ba0cd3fe2bee3, type: 3}
     - {fileID: 21300000, guid: d342eb74e1cc54d7e84ad593caa5ac35, type: 3}
@@ -131,7 +131,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Enabled
-    path: AttackRight
+    path: AttackUp
     classID: 60
     script: {fileID: 0}
   m_EulerEditorCurves: []
