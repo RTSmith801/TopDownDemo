@@ -85534,8 +85534,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: d342eb74e1cc54d7e84ad593caa5ac35,
+      objectReference: {fileID: 0}
+    - target: {fileID: 2673461126620680944, guid: 3341380a837489b458618d933918fcc6,
         type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3723052114186872630, guid: 3341380a837489b458618d933918fcc6,
+        type: 3}
+      propertyPath: m_Name
+      value: LayerImpact
+      objectReference: {fileID: 0}
     - target: {fileID: 4868414164776048941, guid: 3341380a837489b458618d933918fcc6,
         type: 3}
       propertyPath: m_Enabled
@@ -85681,12 +85690,26 @@ PrefabInstance:
       propertyPath: attackPointOffset
       value: 
       objectReference: {fileID: 1377220540}
+    - target: {fileID: 8913485360981439541, guid: 3341380a837489b458618d933918fcc6,
+        type: 3}
+      propertyPath: m_Name
+      value: LayerSlash
+      objectReference: {fileID: 0}
     - target: {fileID: 8974176816311332724, guid: 3341380a837489b458618d933918fcc6,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 1a423941db5634106b8cfcebb4d08db8,
+      objectReference: {fileID: 0}
+    - target: {fileID: 8974176816311332724, guid: 3341380a837489b458618d933918fcc6,
         type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8974176816311332724, guid: 3341380a837489b458618d933918fcc6,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1.4375
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3341380a837489b458618d933918fcc6, type: 3}
 --- !u!1 &1042137499
