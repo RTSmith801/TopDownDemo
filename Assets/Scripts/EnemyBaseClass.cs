@@ -14,7 +14,6 @@ public class EnemyBaseClass : MonoBehaviour
 
     GameObject currentRoom;    
     Rigidbody2D rb;
-    CircleCollider2D col;
     Vector2 movement = new Vector2(0, 0);
     public Vector2 spawnPos = new Vector2();
     public Transform enemyTarget;
@@ -37,7 +36,7 @@ public class EnemyBaseClass : MonoBehaviour
     {
         if (isAlive && spawnPos != null)
         {
-            transform.position = spawnPos;
+            transform.position = spawnPos;         
         }
     }
 
@@ -45,8 +44,7 @@ public class EnemyBaseClass : MonoBehaviour
     {
         enemyTarget = GameObject.FindWithTag("Player").transform;
         currentRoom = transform.parent.gameObject;
-        rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<CircleCollider2D>();
+        rb = GetComponent<Rigidbody2D>();        
         spawnPos = transform.position;
         //print("enemy spawy position = " + spawnPos);
 
@@ -124,6 +122,9 @@ public class EnemyBaseClass : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isAlive)
+            return;
+
         MoveEnemy();
     }
 
@@ -165,5 +166,11 @@ public class EnemyBaseClass : MonoBehaviour
     {
         gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
     }
+    
+    public void Death()
+    {
+        isAlive = false;        
+    }
+
 
 }

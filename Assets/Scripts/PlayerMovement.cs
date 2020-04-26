@@ -186,5 +186,10 @@ public class PlayerMovement : MonoBehaviour
     {
         //print("This was called from Player Movement");
         canMove = true;
-    }      
+    }
+
+    public void Death()
+    {        
+        canMove = false;
+    }
 }

@@ -20,8 +20,8 @@ public class PlayerAttack : MonoBehaviour
     float attackRate = .2f;
     float nextAttackTime = 0f;
     public float attackReach = 1f;
-
-    //public bool isAttacking = false;
+    
+    public bool canAttack = true;
 
     // Use Awake(), OnEnable(), and OnDisable() to identify controller input
     private void Awake()
@@ -46,6 +46,7 @@ public class PlayerAttack : MonoBehaviour
     {   
         animator = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
+        canAttack = true;
     }
 
     private void Update()
@@ -67,7 +68,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void PlayerAttackCalled()
     {
-        if (Time.time >= nextAttackTime)
+        if (Time.time >= nextAttackTime && canAttack)
         {
             animator.SetTrigger("Attack");                
             //isAttacking = true;
@@ -78,7 +79,7 @@ public class PlayerAttack : MonoBehaviour
 
             foreach(Collider2D enemy in hitEnemies)
             {
-                print("hit " + enemy.name);
+                //print("hit " + enemy.name);
                 enemy.GetComponent<HealthManager>().TakeDamage(attackDamage);
             }
         }
@@ -98,5 +99,10 @@ public class PlayerAttack : MonoBehaviour
     {
         //print("This was called from Player attack");
         //isAttacking = false;
+    }
+
+    public void Death()
+    {
+        canAttack = false;
     }
 }
