@@ -11,6 +11,7 @@ public class PlayerAttack : MonoBehaviour
     public LayerMask enemyLayers;
     public Transform attackPoint;
     public Transform attackPointOffset;
+    // Conversion from Vector 2 to Vector 3 for quaternion rotation.
     Vector3 lastLookDirection;    
 
     // I'd like to set all player stats from a single script. 
@@ -19,6 +20,8 @@ public class PlayerAttack : MonoBehaviour
     float attackRate = .2f;
     float nextAttackTime = 0f;
     public float attackReach = 1f;
+
+    //public bool isAttacking = false;
 
     // Use Awake(), OnEnable(), and OnDisable() to identify controller input
     private void Awake()
@@ -52,19 +55,22 @@ public class PlayerAttack : MonoBehaviour
 
     private void LateUpdate()
     {
-        //attackPoint.localPosition = lastLookDirection * attackReach;    
-
-        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, lastLookDirection);
-        desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z + 180);
-        attackPointOffset.rotation = Quaternion.RotateTowards(attackPointOffset.rotation, desiredRotation, 300);
+        Rotate();
     }
 
+    private void Rotate()
+    {               
+        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, lastLookDirection);
+        desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z + 180);
+        attackPointOffset.rotation = Quaternion.RotateTowards(attackPointOffset.rotation, desiredRotation, 300);    
+    }
 
     private void PlayerAttackCalled()
     {
         if (Time.time >= nextAttackTime)
         {
             animator.SetTrigger("Attack");                
+            //isAttacking = true;
             playerMovement.canMove = false;
             nextAttackTime = Time.time + attackRate;
 
@@ -87,5 +93,10 @@ public class PlayerAttack : MonoBehaviour
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 
-
+    // This method exists on multiple scripts and is called in the animator.
+    public void AnimationExit()
+    {
+        //print("This was called from Player attack");
+        //isAttacking = false;
+    }
 }

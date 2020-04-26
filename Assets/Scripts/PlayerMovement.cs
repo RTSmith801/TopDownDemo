@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movement = new Vector2(0, 0);
     Vector2 lookDirection = new Vector2(0, 0);
     public Vector2 lastLookDirection = new Vector2(0, -1);
+
+    // This currently isn't doing anything, but thought it would be good info to have on the player.
     public string lastLookDirectionDefined = "South";
     
     bool isRunning = false;
@@ -63,13 +65,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        GetControllerInput();
-        // This currently isn't doing anything, but thought it would be good info to have on the player.
+        if (canMove)
+            GetControllerInput();
+
         LastLookDirectionDefined();                       
     }
 
     private void GetControllerInput()
-    {
+    {   
         // Right Joystick will override look direction so character can face in a user defined direction while moving in a different direction.
         // This will default to matching movement controlls if look direction is not defined by user.
         if ((lookDirection.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f)))
@@ -86,6 +89,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void LockAxis(Vector2 inputDirection)
     {
+        //if (!canMove)
+        //    return;
+        
         // Attempting to lock look direction to one of four directions.  This should prevent triggering of multiple direction's attack animations.
         if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.y))
         {
@@ -104,8 +110,7 @@ public class PlayerMovement : MonoBehaviour
             lastLookDirection.Normalize();
         }
     }
-
-    // This currently isn't doing anything, but thought it would be good info to have on the player.
+    
     void LastLookDirectionDefined()
     {
         if (lastLookDirection == new Vector2(0, 1))
@@ -134,11 +139,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Prevents changing look direction while attacking.
-        if (canMove)
-        {
-            animator.SetFloat("Horizontal", lastLookDirection.x);
-            animator.SetFloat("Vertical", lastLookDirection.y);
-        }
+        
+        
+        animator.SetFloat("Horizontal", lastLookDirection.x);
+        animator.SetFloat("Vertical", lastLookDirection.y);
+        
 
         if (!isRunning)
             animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
@@ -160,14 +165,12 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isRunning == false)
             {
-                rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-                //animator.SetFloat("Speed", (movement.magnitude * moveSpeed) / moveSpeed);
+                rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);                
             }
 
             else if (isRunning == true)
             {   
-                rb.MovePosition(rb.position + movement * (moveSpeed * runSpeedMultiplier) * Time.fixedDeltaTime);
-                //animator.SetFloat("Speed", (movement.magnitude * (moveSpeed * runSpeedMultiplier) / moveSpeed));
+                rb.MovePosition(rb.position + movement * (moveSpeed * runSpeedMultiplier) * Time.fixedDeltaTime);                
             }
         }
 
@@ -178,8 +181,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // This method exists on multiple scripts and is called in the animator.
     public void AnimationExit()
     {
+        //print("This was called from Player Movement");
         canMove = true;
     }      
 }
