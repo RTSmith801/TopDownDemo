@@ -44,9 +44,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //RoomChange(currentRoom);
+        // If Scene Transitions exist, will disable and set active on enter room.
         TurnOffSceneTransitions();
-        //currentRoom.GetComponent<RoomProperties>().EnterRoom(currentRoom);        
     }
 
     public void RoomChange(GameObject roomEntered)
@@ -58,9 +57,9 @@ public class GameManager : MonoBehaviour
         if (lastRoom != null && lastRoom != currentRoom)
         {
             TurnOffSceneTransitions();
-        }
-        DisableEnemies();
+        }        
         EnableEnemies();
+        Invoke("DisableEnemies", fadeSpeed);
         Invoke("TurnOnSceneTransitions", fadeSpeed);
     }
 

@@ -91,7 +91,13 @@ public class EnemyBaseClass : MonoBehaviour
 
 
     void CheckDistanceToTarget()
-    {       
+    {
+        if (enemyTarget == null)
+        {
+            movement = Vector2.zero;
+            return;
+        }
+
         if (Vector2.Distance(enemyTarget.position, transform.position) <= chaseRadius)
         {
             enemmyTargetWithinRadius = true;
@@ -129,12 +135,14 @@ public class EnemyBaseClass : MonoBehaviour
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 
+
+    // move to attack script.
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("PlayerWeapon"))
+        if (other.gameObject.CompareTag("Player"))
         {
-            //print("player has hit enemy");
-            TakeDamage();
+            //print("enemy collider has hit player");
+            other.gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
         }
     }
 
@@ -142,8 +150,8 @@ public class EnemyBaseClass : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            //print("enemy has hit player");
-            other.gameObject.GetComponent<PlayerMovement>().PlayerTakeDamage(attackDammage);
+            //print("enemy collided with player");
+            other.gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
         }        
     }
 
@@ -155,30 +163,7 @@ public class EnemyBaseClass : MonoBehaviour
 
     void TakeDamage()
     {
-        StartCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
-    }
-
-    IEnumerator FlashWhite(Material matDefault, Material matFlashWhite, float flashWhiteSpeed, float flashWhiteDurration)
-    {
-        float flashWhiteDurrationTimer = 0f;
-        float flashWhiteSpeedTimer = flashWhiteSpeed;
-        while (flashWhiteDurrationTimer <= flashWhiteDurration)
-        {
-            flashWhiteDurrationTimer += Time.deltaTime;
-            flashWhiteSpeedTimer += Time.deltaTime;
-            if (flashWhiteSpeedTimer >= flashWhiteSpeed)
-            {
-                if (sr.material == matDefault)
-                    sr.material = matFlashWhite;
-                else
-                    sr.material = matDefault;
-                flashWhiteSpeedTimer = 0f;
-                print("sr.material = " + sr.material);
-            }
-            yield return null;
-        }
-        sr.material = matDefault;
-        StopCoroutine(FlashWhite(matDefault, matFlashWhite, flashWhiteSpeed, flashWhiteDurration));
+        gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
     }
 
 }
