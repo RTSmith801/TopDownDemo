@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     Scene scene;
-
+    public AudioManager am;
     public GameObject currentRoom;
     public GameObject lastRoom;
     public float fadeSpeed = .7f;
@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
 
 
     private void Assignments()
-    {   
+    {
+        am = FindObjectOfType<AudioManager>();
         IdentifyAllEnemies();
         IdentifyAllSceneTransitions();
         player = GameObject.FindGameObjectWithTag("Player");
@@ -65,7 +66,7 @@ public class GameManager : MonoBehaviour
     }
 
     void Start()
-    {
+    {        
         scene = SceneManager.GetActiveScene();
         // If Scene Transitions exist, will disable and set active on enter room.
         TurnOffSceneTransitions();
@@ -96,7 +97,7 @@ public class GameManager : MonoBehaviour
             }
 
 
-            if (enemies[i].transform.parent.gameObject != currentRoom)
+            else if (enemies[i].transform.parent.gameObject != currentRoom)
             {
                 enemies[i].gameObject.SetActive(false);
             }
@@ -112,7 +113,7 @@ public class GameManager : MonoBehaviour
                 enemies.Remove(enemies[i].gameObject);
             }
 
-            if (enemies[i].transform.parent.gameObject == currentRoom)
+            else if (enemies[i].transform.parent.gameObject == currentRoom)
             {
                 enemies[i].gameObject.SetActive(true);
             }

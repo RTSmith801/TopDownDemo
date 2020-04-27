@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1991045664142592682}
   - component: {fileID: 8758540503699270698}
   - component: {fileID: 6000786503803349562}
+  - component: {fileID: 3046944077460115016}
   - component: {fileID: 1991045664142592662}
   - component: {fileID: 1991045664142592663}
   m_Layer: 9
@@ -120,7 +121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyHealth: 0
   enemyName: 
-  attackDammage: 0
+  attackDamage: 0
   moveSpeed: 0
   chaseRadius: 4
   attackRadius: 0
@@ -129,6 +130,7 @@ MonoBehaviour:
   enemyTarget: {fileID: 0}
   enemmyTargetWithinRadius: 0
   isAlive: 1
+  canMove: 1
   sr: {fileID: 0}
   matDefault: {fileID: 0}
   matFlashWhite: {fileID: 0}
@@ -165,6 +167,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flashWhiteDurration: 0.5
+--- !u!114 &3046944077460115016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991045664142592685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 744d3cce020dd8b4c9ec97b78dbbf5ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &1991045664142592662
 Rigidbody2D:
   serializedVersion: 4
@@ -183,7 +197,7 @@ Rigidbody2D:
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!58 &1991045664142592663

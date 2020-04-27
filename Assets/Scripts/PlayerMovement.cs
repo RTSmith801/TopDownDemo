@@ -18,8 +18,8 @@ public class PlayerMovement : MonoBehaviour
     public bool canMove = true;
 
     // // I'd like to set all player stats from a single script. 
-    float moveSpeed = 5f;
-    float runSpeedMultiplier = 1.5f;    
+    public float moveSpeed = 5f;
+    public float runSpeedMultiplier = 1.5f;    
 
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;    

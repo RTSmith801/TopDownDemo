@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HealthManager : MonoBehaviour
 {
+    GameManager gm;
     CircleCollider2D col;
     public Animator animator;
     public FlashWhite flashWhite;
@@ -18,6 +19,7 @@ public class HealthManager : MonoBehaviour
 
     private void Awake()
     {
+        gm = FindObjectOfType<GameManager>();
         col = GetComponent<CircleCollider2D>();
         animator = GetComponent<Animator>();
         flashWhite = GetComponent<FlashWhite>();
@@ -38,13 +40,45 @@ public class HealthManager : MonoBehaviour
         {
             isInvincible = true;
             Invoke("Vulnerable", flashWhiteDurration);
-            flashWhite.FlashWhiteCalled();
             Interruption();
             healthCurrent -= damageAmount;
             if (healthCurrent <= 0)
             {
                 Die();
                 return;
+            }
+            flashWhite.FlashWhiteCalled();
+            SoundCue();
+        }
+    }
+
+    private void SoundCue()
+    {
+        if (gameObject.CompareTag("Player"))
+        {
+            if (isAlive)
+            {
+                int x = Random.Range(1, 3);
+                gm.am.Play("PlayerHit" + x);
+            }
+
+            else
+            {
+                gm.am.Play("PlayerDeath");
+            }
+        }
+
+        else
+        {
+            if (isAlive)
+            {
+                int x = Random.Range(1, 4);
+                gm.am.Play("SlimeHit" + x);
+            }
+
+            else
+            {
+                gm.am.Play("SlimeDeath");
             }
         }
     }
@@ -63,12 +97,15 @@ public class HealthManager : MonoBehaviour
     {
         print(gameObject.name + " has died");    
         isAlive = false;
+        SoundCue();
         animator.SetBool("isAlive", false);
         // Death effect & animation
 
         // The following will only occur if death is not on Player.
         if (gameObject.CompareTag("Player"))
         {
+            // I only want the sprite flash on the player when he dies.
+            flashWhite.FlashWhiteCalled();
             GetComponent<Rigidbody2D>().isKinematic = true;
             return;
         }

@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyState { idle, walk, attack, stagger}
+
 public class EnemyBaseClass : MonoBehaviour
-{    
+{
+    public EnemyState currentState;    
+
     public int enemyHealth;
     public string enemyName;
-    public int attackDammage;
+    public int attackDamage;
     public float moveSpeed;
     public float chaseRadius;
     public float attackRadius;
@@ -19,12 +23,12 @@ public class EnemyBaseClass : MonoBehaviour
     public Transform enemyTarget;
     public bool enemmyTargetWithinRadius = false;
     public bool isAlive = true;
+    public bool canMove = true;
+        
+    Vector2 targetPosition = new Vector2 (0,0);
+    Vector2 currentPosition = new Vector2 (0,0);
 
-    public SpriteRenderer sr;
-    public Material matDefault;
-    public Material matFlashWhite;
-    public float flashWhiteSpeed = 0.05f;
-    public float flashWhiteDurration = .5f;
+
 
     private void Awake()
     {
@@ -32,42 +36,22 @@ public class EnemyBaseClass : MonoBehaviour
         BaseStats();
     }
 
-    private void OnEnable()
-    {
-        if (isAlive && spawnPos != null)
-        {
-            transform.position = spawnPos;         
-        }
-    }
-
     protected virtual void StartingAssignments()
     {
         enemyTarget = GameObject.FindWithTag("Player").transform;
         currentRoom = transform.parent.gameObject;
         rb = GetComponent<Rigidbody2D>();        
-        spawnPos = transform.position;
-        //print("enemy spawy position = " + spawnPos);
-
-        sr = GetComponent<SpriteRenderer>();
-        matDefault = sr.material;
-        matFlashWhite = Resources.Load("FlashWhite", typeof(Material)) as Material;
-        //Invoke ("Test", 2f);
+        spawnPos = transform.position;        
     }
 
-    private void Test()
+    private void OnEnable()
     {
-        sr.material = null;
-        sr.material = matFlashWhite;
-        print("sr.material = " + sr.material);
-        Invoke("Test2", 2f);
-    }
+        if (!isAlive || spawnPos == null)
+            return;
 
-    private void Test2()
-    {
-        sr.material = null;
-        sr.material = matDefault;
-        print("sr.material = " + sr.material);
-        Invoke("Test", 2f);
+        transform.position = spawnPos;
+        currentState = EnemyState.idle;
+        
     }
 
     protected virtual void BaseStats()
@@ -75,8 +59,8 @@ public class EnemyBaseClass : MonoBehaviour
         // Base stats
         enemyHealth = 3;
         enemyName = "Unidentified Enemy";
-        attackDammage = 1;
-        moveSpeed = 1f;
+        attackDamage = 1;
+        moveSpeed = 3f;
         chaseRadius = 4f;
         attackRadius = 1f;
         attackSpeed = 2f;
@@ -84,36 +68,23 @@ public class EnemyBaseClass : MonoBehaviour
 
     private void Update()
     {
-        CheckDistanceToTarget();        
+        RecordTransformPositions();        
     }
 
 
-    void CheckDistanceToTarget()
+    void RecordTransformPositions()
     {
-        if (enemyTarget == null)
-        {
-            movement = Vector2.zero;
-            return;
-        }
+        targetPosition = enemyTarget.position;
+        currentPosition = transform.position;
 
-        if (Vector2.Distance(enemyTarget.position, transform.position) <= chaseRadius)
-        {
+        movement = (targetPosition - currentPosition);
+
+        if (Vector2.Distance(targetPosition, currentPosition) <= chaseRadius)
             enemmyTargetWithinRadius = true;
-            if (Vector2.Distance(enemyTarget.position, transform.position) >= attackRadius)
-            {
-                movement = enemyTarget.position - transform.position;
-            }
-
-            else
-            {
-                Attack();
-            }
-        }
         else
-        {
-            movement = Vector2.zero;
-        }
+            enemmyTargetWithinRadius = false;
     }
+    
 
     private static void Attack()
     {
@@ -122,28 +93,21 @@ public class EnemyBaseClass : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!isAlive)
-            return;
-
-        MoveEnemy();
+        if (isAlive && canMove && enemmyTargetWithinRadius && enemyTarget != null)
+        {
+            if (currentState != EnemyState.stagger)
+                MoveEnemy();        
+        }
     }
 
     private void MoveEnemy()
-    {
-        if (!enemmyTargetWithinRadius)
-            return;
+    {           
 
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-    }
-
-
-    // move to attack script.
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
+        if (Vector2.Distance(targetPosition, currentPosition) >= attackRadius)
         {
-            //print("enemy collider has hit player");
-            other.gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
+            ChangeState(EnemyState.walk);
+            Vector2 temp = Vector2.MoveTowards(currentPosition, targetPosition, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(temp);
         }
     }
 
@@ -152,19 +116,14 @@ public class EnemyBaseClass : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             //print("enemy collided with player");
-            other.gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
+            other.gameObject.GetComponent<HealthManager>().TakeDamage(attackDamage);
         }        
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, chaseRadius);
     }
 
     void TakeDamage()
     {
-        gameObject.GetComponent<HealthManager>().TakeDamage(attackDammage);
+        canMove = false;
+        gameObject.GetComponent<HealthManager>().TakeDamage(attackDamage);
     }
     
     public void Death()
@@ -172,5 +131,16 @@ public class EnemyBaseClass : MonoBehaviour
         isAlive = false;        
     }
 
+    void ChangeState(EnemyState newState)
+    {
+        if (currentState != newState)
+            currentState = newState;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, chaseRadius);
+    }
 
 }

@@ -12,8 +12,8 @@ public class PlayerAttack : MonoBehaviour
     public Transform attackPoint;
     public Transform attackPointOffset;
     // Conversion from Vector 2 to Vector 3 for quaternion rotation.
-    Vector3 lastLookDirection;    
-
+    Vector3 lastLookDirection;
+    GameManager gm;
     // I'd like to set all player stats from a single script. 
     int attackDamage = 1;
     public float attackRange = .5f;
@@ -22,10 +22,13 @@ public class PlayerAttack : MonoBehaviour
     public float attackReach = 1f;
     
     public bool canAttack = true;
+    float knockbackStrength = 10f;
+    float knockbackTime = .1f;
 
     // Use Awake(), OnEnable(), and OnDisable() to identify controller input
     private void Awake()
     {
+        gm = FindObjectOfType<GameManager>();
         XBoxControllerInput = new PlayerControls();
 
         XBoxControllerInput.Gameplay.X.performed += ctx => PlayerAttackCalled();
@@ -70,8 +73,8 @@ public class PlayerAttack : MonoBehaviour
     {
         if (Time.time >= nextAttackTime && canAttack)
         {
-            animator.SetTrigger("Attack");                
-            //isAttacking = true;
+            animator.SetTrigger("Attack");
+            SoundCue();
             playerMovement.canMove = false;
             nextAttackTime = Time.time + attackRate;
 
@@ -81,7 +84,46 @@ public class PlayerAttack : MonoBehaviour
             {
                 //print("hit " + enemy.name);
                 enemy.GetComponent<HealthManager>().TakeDamage(attackDamage);
+                Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+
+                if (rb != null)
+                {
+                    print("Knockback collision has been called on " + enemy.gameObject.name);
+                    rb.GetComponent<EnemyBaseClass>().currentState = EnemyState.stagger;
+                                        
+                    Vector2 direction = enemy.transform.position - transform.position;
+                    //direction.y = 0;
+
+                    rb.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
+                    StartCoroutine(Knocked(rb));
+                }
             }
+        }
+    }
+
+    private IEnumerator Knocked(Rigidbody2D enemy)
+    {
+        if (enemy != null)
+        {
+            yield return new WaitForSeconds(knockbackTime);
+            enemy.velocity = Vector2.zero;
+            enemy.GetComponent<EnemyBaseClass>().currentState = EnemyState.idle;
+        }
+    }
+
+
+    private void SoundCue()
+    {
+        if (gameObject.CompareTag("Player"))
+        {
+            int x = Random.Range(1, 6);
+            gm.am.Play("Attack" + x);
+            
+        }
+
+        else
+        {
+            // Enemy Attack Sound goes here.
         }
     }
 
