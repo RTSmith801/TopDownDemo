@@ -4,22 +4,20 @@ using UnityEngine;
 
 public class Knockback : MonoBehaviour
 {
-    float knockbackStrength = 15f;
-    float knockbackTime = .2f;
+    float knockbackStrength = 10f;
+    float knockbackTime = .15f;
 
 
     private void OnCollisionEnter2D(Collision2D other)
     {
         Rigidbody2D rb = other.gameObject.GetComponent<Rigidbody2D>();
-        print("Knockback collision has been called");
 
         if (rb != null)
         {
-            print("Knockback collision has been called on " + other.gameObject.name);
+            if (other.gameObject.CompareTag("Player"))
+                rb.GetComponent<PlayerMovement>().currentState = PlayerState.stagger;
 
-            //other.gameObject.GetComponent<PlayerMovement>().canMove = false;            
             Vector2 direction = other.transform.position - transform.position;
-            //direction.y = 0;
 
             rb.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
             StartCoroutine(Knocked(rb));
@@ -31,8 +29,10 @@ public class Knockback : MonoBehaviour
         if (other != null)
         {
             yield return new WaitForSeconds(knockbackTime);
-            other.velocity = Vector2.zero;            
-            //other.isKinematic = true;
+            other.velocity = Vector2.zero;
+
+            if (other.gameObject.CompareTag("Player"))
+                other.GetComponent<PlayerMovement>().currentState = PlayerState.idle;
         }        
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-
     Animator animator;  
     PlayerControls XBoxControllerInput;
     PlayerMovement playerMovement;
@@ -46,7 +45,7 @@ public class PlayerAttack : MonoBehaviour
     }
 
     private void Start()
-    {   
+    {
         animator = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
         canAttack = true;

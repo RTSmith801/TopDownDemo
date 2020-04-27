@@ -62,7 +62,7 @@ public class EnemyBaseClass : MonoBehaviour
         attackDamage = 1;
         moveSpeed = 3f;
         chaseRadius = 4f;
-        attackRadius = 1f;
+        attackRadius = .1f;
         attackSpeed = 2f;
     }
 

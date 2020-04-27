@@ -2,8 +2,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum PlayerState { idle, walk, attack, stagger }
+
 public class PlayerMovement : MonoBehaviour
 {
+    public PlayerState currentState;
+
     Rigidbody2D rb;
     Animator animator;    
 
@@ -61,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        currentState = PlayerState.idle;
     }
 
     void Update()
@@ -155,7 +160,8 @@ public class PlayerMovement : MonoBehaviour
     // Use this for physics updates.
     private void FixedUpdate()
     {
-        PlayerMove();
+        if (currentState != PlayerState.stagger)
+            PlayerMove();
     }
 
     private void PlayerMove()
@@ -163,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
         // Primary purpose is to prevent movement while attacking.
         if (canMove)
         {
+            ChangeState(PlayerState.walk);
             if (isRunning == false)
             {
                 rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);                
@@ -177,6 +184,7 @@ public class PlayerMovement : MonoBehaviour
         // Prevents player from drifting while attacking
         else if (!canMove)
         {
+            ChangeState(PlayerState.idle);
             rb.velocity = Vector2.zero;
         }
     }
@@ -191,5 +199,11 @@ public class PlayerMovement : MonoBehaviour
     public void Death()
     {        
         canMove = false;
+    }
+
+    void ChangeState(PlayerState newState)
+    {
+        if (currentState != newState)
+            currentState = newState;
     }
 }
