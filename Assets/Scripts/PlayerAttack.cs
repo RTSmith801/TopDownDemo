@@ -6,8 +6,8 @@ public class PlayerAttack : MonoBehaviour
 {
     Animator animator;  
     PlayerControls XBoxControllerInput;
-    PlayerMovement playerMovement;
-    public LayerMask enemyLayers;
+    PlayerManager pm;
+    public LayerMask hitLayers;
     public Transform attackPoint;
     public Transform attackPointOffset;
     // Conversion from Vector 2 to Vector 3 for quaternion rotation.
@@ -47,13 +47,13 @@ public class PlayerAttack : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        playerMovement = GetComponent<PlayerMovement>();
+        pm = GetComponent<PlayerManager>();
         canAttack = true;
     }
 
     private void Update()
     {
-        lastLookDirection = playerMovement.lastLookDirection;
+        lastLookDirection = pm.lastLookDirection;
     }
 
     private void LateUpdate()
@@ -72,25 +72,25 @@ public class PlayerAttack : MonoBehaviour
     {
         if (Time.time >= nextAttackTime && canAttack)
         {
+            pm.ChangeState(PlayerState.attack);
             animator.SetTrigger("Attack");
             SoundCue();
-            playerMovement.canMove = false;
             nextAttackTime = Time.time + attackRate;
 
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+            Collider2D[] hitRegistered = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, hitLayers);
 
-            foreach(Collider2D enemy in hitEnemies)
+            foreach(Collider2D hit in hitRegistered)
             {
                 //print("hit " + enemy.name);
-                enemy.GetComponent<HealthManager>().TakeDamage(attackDamage);
-                Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+                hit.GetComponent<HealthManager>().TakeDamage(attackDamage);
+                Rigidbody2D rb = hit.GetComponent<Rigidbody2D>();
 
                 if (rb != null)
                 {
-                    print("Knockback collision has been called on " + enemy.gameObject.name);
+                    print("Knockback collision has been called on " + hit.gameObject.name);
                     rb.GetComponent<EnemyBaseClass>().currentState = EnemyState.stagger;
                                         
-                    Vector2 direction = enemy.transform.position - transform.position;
+                    Vector2 direction = hit.transform.position - transform.position;
                     //direction.y = 0;
 
                     rb.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
@@ -139,7 +139,7 @@ public class PlayerAttack : MonoBehaviour
     public void AnimationExit()
     {
         //print("This was called from Player attack");
-        //isAttacking = false;
+        //isAttacking = false;        
     }
 
     public void Death()
