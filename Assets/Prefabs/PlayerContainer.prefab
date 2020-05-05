@@ -135,13 +135,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  movement: {x: 0, y: 0}
-  lookDirection: {x: 0, y: 0}
+  leftStick: {x: 0, y: 0}
+  rightStick: {x: 0, y: 0}
   lastLookDirection: {x: 0, y: -1}
   lastLookDirectionDefined: South
   isRunning: 0
   moveSpeed: 5
   runSpeedMultiplier: 1.5
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 512
+  attackPoint: {fileID: 7980731963796665433}
+  attackPointOffset: {fileID: 7980731962163033555}
+  attackRate: 0.2
+  nextAttackTime: 0
+  attackDamage: 1
+  attackRange: 1
+  knockbackStrength: 10
+  knockbackTime: 0.1
 --- !u!114 &7980731962125248084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,14 +202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7930d550bbcf864484582f79816676a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitLayers:
-    serializedVersion: 2
-    m_Bits: 512
-  attackPoint: {fileID: 7980731963796665433}
-  attackPointOffset: {fileID: 7980731962163033555}
-  attackRange: 1
-  attackReach: 0.75
-  canAttack: 1
 --- !u!114 &7980731962125248095
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,15 +12,27 @@ public class PlayerManager : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
     PlayerMovement pm;
-
-    // Movement Variables
-    [HideInInspector] public Vector2 movement = new Vector2(0, 0);
-    [HideInInspector] public Vector2 lookDirection = new Vector2(0, 0);
+    PlayerAttack pa;
+        
+    [Header ("Movement Variables")]
+    [HideInInspector] public Vector2 leftStick = new Vector2(0, 0);
+    [HideInInspector] public Vector2 rightStick = new Vector2(0, 0);
     [HideInInspector] public Vector2 lastLookDirection = new Vector2(0, -1);
     public string lastLookDirectionDefined = "South";
     public bool isRunning = false;
     public float moveSpeed = 5f;
     public float runSpeedMultiplier = 1.5f;
+
+    [Header ("Attack Variables")]
+    public LayerMask hitLayers;
+    public Transform attackPoint;
+    public Transform attackPointOffset;
+    public float attackRate = .2f;
+    public float nextAttackTime = 0f;
+    public int attackDamage = 1;
+    public float attackRange = 1f;
+    public float knockbackStrength = 10f;
+    public float knockbackTime = .1f;
 
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;
@@ -34,17 +46,20 @@ public class PlayerManager : MonoBehaviour
 
         XBoxControllerInput = new PlayerControls();
 
-        XBoxControllerInput.Gameplay.LeftStick.performed += ctx => movement = ctx.ReadValue<Vector2>();
-        XBoxControllerInput.Gameplay.LeftStick.canceled += ctx => movement = Vector2.zero;
+        XBoxControllerInput.Gameplay.LeftStick.performed += ctx => leftStick = ctx.ReadValue<Vector2>();
+        XBoxControllerInput.Gameplay.LeftStick.canceled += ctx => leftStick = Vector2.zero;
 
-        XBoxControllerInput.Gameplay.RightStick.performed += ctx => lookDirection = ctx.ReadValue<Vector2>();
-        XBoxControllerInput.Gameplay.RightStick.canceled += ctx => lookDirection = Vector2.zero;
+        XBoxControllerInput.Gameplay.RightStick.performed += ctx => rightStick = ctx.ReadValue<Vector2>();
+        XBoxControllerInput.Gameplay.RightStick.canceled += ctx => rightStick = Vector2.zero;
 
         XBoxControllerInput.Gameplay.B.performed += ctx => isRunning = true;
         XBoxControllerInput.Gameplay.B.canceled += ctx => isRunning = false;
 
         XBoxControllerInput.Gameplay.LeftBumper.performed += ctx => isRunning = true;
         XBoxControllerInput.Gameplay.LeftBumper.canceled += ctx => isRunning = false;
+
+        XBoxControllerInput.Gameplay.X.performed += ctx => PlayerAttackCalled();
+        XBoxControllerInput.Gameplay.RightBumper.performed += ctx => PlayerAttackCalled();
     }
 
     private void OnEnable()
@@ -56,47 +71,41 @@ public class PlayerManager : MonoBehaviour
     {
         XBoxControllerInput.Gameplay.Disable();
     }
-
-
+    
     private void Start()
     {
         ChangeState(PlayerState.idle);
         gm = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        pm = GetComponent<PlayerMovement>();        
+        pm = GetComponent<PlayerMovement>();
+        pa = GetComponent<PlayerAttack>();
     }
 
     void Update()
     {
-        if (currentState == PlayerState.idle || currentState == PlayerState.walk)
-            GetControllerInput();
-
-        LastLookDirectionDefined();
+        GetControllerInput();        
     }
 
     private void GetControllerInput()
     {
         // Right Joystick will override look direction so character can face in a user defined direction while moving in a different direction.
         // This will default to matching movement controlls if look direction is not defined by user.
-        if ((lookDirection.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(movement.x, 0.0f) || !Mathf.Approximately(movement.y, 0.0f)))
+        if ((rightStick.magnitude <= rightStickDeadZone) && (!Mathf.Approximately(leftStick.x, 0.0f) || !Mathf.Approximately(leftStick.y, 0.0f)))
         {
-            LockAxis(movement);
+            LockAxis(leftStick);
         }
 
-        else if (lookDirection.magnitude > rightStickDeadZone)
+        else if (rightStick.magnitude > rightStickDeadZone)
         {
-            LockAxis(lookDirection);
+            LockAxis(rightStick);
         }
 
     }
 
     private void LockAxis(Vector2 inputDirection)
     {
-        //if (!canMove)
-        //    return;
-
-        // Attempting to lock look direction to one of four directions.  This should prevent triggering of multiple direction's attack animations.
+        // Locks look direction to one of four directions.  This should prevent triggering of multiple direction's attack animations.
         if (Mathf.Abs(inputDirection.x) > Mathf.Abs(inputDirection.y))
         {
             lastLookDirection.Set(inputDirection.x, 0);
@@ -111,65 +120,57 @@ public class PlayerManager : MonoBehaviour
 
         else
         {
+            print("Joysticks are reading the same? " + lastLookDirection);
             lastLookDirection.Normalize();
         }
     }
 
-    void LastLookDirectionDefined()
-    {
-        if (lastLookDirection == new Vector2(0, 1))
-        {
-            lastLookDirectionDefined = "North";
-        }
-
-        else if (lastLookDirection == new Vector2(0, -1))
-        {
-            lastLookDirectionDefined = "South";
-        }
-
-        else if (lastLookDirection == new Vector2(1, 0))
-        {
-            lastLookDirectionDefined = "East";
-        }
-
-        else if (lastLookDirection == new Vector2(-1, 0))
-        {
-            lastLookDirectionDefined = "West";
-        }
-
-        else
-        {
-            lastLookDirectionDefined = "Undefined last look direction = (" + lastLookDirection.x + ", " + lastLookDirection.y + ")";
-        }
-    }
-
-
     // Use this for physics updates.
     private void FixedUpdate()
     {
+        // Player movement called here.
         if (currentState == PlayerState.idle || currentState == PlayerState.walk)
         {
-            pm.movement = movement;
-            pm.lookDirection = lookDirection;
+            pm.movement = leftStick;
+            pm.lookDirection = rightStick;
             pm.lastLookDirection = lastLookDirection;
             pm.isRunning = isRunning;
             pm.moveSpeed = moveSpeed;
             pm.runSpeedMultiplier = runSpeedMultiplier;
             pm.PlayerMove();
+
+            // Rotates attack point
+            Rotate();
         }
     }
 
-    // This method exists on multiple scripts and is called in the animator.
+    private void Rotate()
+    {
+        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, lastLookDirection);
+        desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z + 180);
+        attackPointOffset.rotation = Quaternion.RotateTowards(attackPointOffset.rotation, desiredRotation, 300);
+    }
+
+    public void PlayerAttackCalled()
+    {
+        if (Time.time >= nextAttackTime && (currentState == PlayerState.idle || currentState == PlayerState.walk))
+        {
+            ChangeState(PlayerState.attack);
+            animator.SetTrigger("Attack");
+            pa.PlayerAttackCalled(hitLayers, attackPoint, attackDamage, attackRange, knockbackStrength, knockbackTime);            
+            nextAttackTime = Time.time + attackRate;
+        }
+    }
+
+    // This method can exist on multiple scripts and is called from the player's animation after attack.
     public void AnimationExit()
     {
-        //canMove = true;
         if (currentState != PlayerState.dead)
             ChangeState(PlayerState.idle);
     }
 
     public void Death()
-    {
-        //canMove = false;
+    {   
         ChangeState(PlayerState.dead);
     }
 
@@ -177,5 +178,15 @@ public class PlayerManager : MonoBehaviour
     {
         if (currentState != newState)
             currentState = newState;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Displays attackPoint.
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 }

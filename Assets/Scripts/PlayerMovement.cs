@@ -4,8 +4,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public PlayerState currentState;
-
     Rigidbody2D rb;
     Animator animator;
 
@@ -25,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
     // Call this from FixedUpdate() on PlayerManager.cs.
     public void PlayerMove()
     {
-
         animator.SetFloat("Horizontal", lastLookDirection.x);
         animator.SetFloat("Vertical", lastLookDirection.y);
 
@@ -42,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
         }        
     }
 
-    //private IEnumerator MovePlayer(Rigidbody2D rb, float moveSpeed)
+    //private IEnumerator AutoMovePlayer(Rigidbody2D rb, float moveSpeed)
     //{
     //    if (rb != null)
     //    {

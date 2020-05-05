@@ -58,7 +58,7 @@ public class RoomProperties : MonoBehaviour
         {   
             LeaveRoom();
         }
-    }
+    } 
 
     IEnumerator FadeBlackOutCanvas(Color startingColor, Color fadeToColor, float fadeSpeed)
     {   

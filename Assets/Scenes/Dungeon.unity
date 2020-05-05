@@ -86108,7 +86108,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1215609567}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.5, y: 22.5, z: -10}
+  m_LocalPosition: {x: 29.5, y: 25.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -89847,12 +89847,12 @@ PrefabInstance:
     - target: {fileID: 7319388045602012687, guid: 099e719443506ae4db035dbf3fa19f94,
         type: 3}
       propertyPath: m_Radius
-      value: 0.3
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7319388045602012687, guid: 099e719443506ae4db035dbf3fa19f94,
         type: 3}
       propertyPath: m_Offset.y
-      value: -0.2
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 099e719443506ae4db035dbf3fa19f94, type: 3}
@@ -90708,6 +90708,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 475641530}
     m_Modifications:
+    - target: {fileID: 6693675834796480830, guid: f517d6936ab332144ac1613542d16366,
+        type: 3}
+      propertyPath: attackRange
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7980731963298643348, guid: f517d6936ab332144ac1613542d16366,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -90763,10 +90768,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7980731963303462665, guid: f517d6936ab332144ac1613542d16366,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7980731963365499886, guid: f517d6936ab332144ac1613542d16366,
         type: 3}
       propertyPath: m_Name
       value: PlayerContainer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7980731963618221393, guid: f517d6936ab332144ac1613542d16366,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f517d6936ab332144ac1613542d16366, type: 3}
