@@ -15,7 +15,7 @@ public class Knockback : MonoBehaviour
         if (rb != null)
         {
             if (other.gameObject.CompareTag("Player"))
-                rb.GetComponent<PlayerManager>().currentState = PlayerState.stagger;
+                rb.GetComponent<PlayerManager>().ChangeState(PlayerState.stagger);
 
             Vector2 direction = other.transform.position - transform.position;
 
@@ -32,7 +32,7 @@ public class Knockback : MonoBehaviour
             other.velocity = Vector2.zero;
 
             if (other.gameObject.CompareTag("Player"))
-                other.GetComponent<PlayerManager>().currentState = PlayerState.idle;
+                other.GetComponent<PlayerManager>().ChangeState(PlayerState.idle);
         }        
     }
 }

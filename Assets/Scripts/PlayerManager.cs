@@ -74,7 +74,8 @@ public class PlayerManager : MonoBehaviour
     
     private void Start()
     {
-        ChangeState(PlayerState.idle);
+        // This is the only place the current state should be manually set. All other changes should be called through ChangeState().
+        currentState = PlayerState.idle;
         gm = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -165,8 +166,7 @@ public class PlayerManager : MonoBehaviour
     // This method can exist on multiple scripts and is called from the player's animation after attack.
     public void AnimationExit()
     {
-        if (currentState != PlayerState.dead)
-            ChangeState(PlayerState.idle);
+        ChangeState(PlayerState.idle);
     }
 
     public void Death()
@@ -176,6 +176,10 @@ public class PlayerManager : MonoBehaviour
 
     public void ChangeState(PlayerState newState)
     {
+        // Currently, once player is dead, they can only have their state changed by restarting.        
+        if (currentState == PlayerState.dead)
+            return;
+
         if (currentState != newState)
             currentState = newState;
     }

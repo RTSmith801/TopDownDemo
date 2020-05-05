@@ -40,7 +40,7 @@ public class HealthManager : MonoBehaviour
         {
             if (gameObject.CompareTag("Player"))
             {   
-                GetComponent<PlayerManager>().ChangeState(PlayerState.stagger);                
+                GetComponent<PlayerManager>().ChangeState(PlayerState.stagger);             
             }
 
             isInvincible = true;
