@@ -38,9 +38,14 @@ public class HealthManager : MonoBehaviour
     {
         if (!isInvincible && isAlive)
         {
+            if (gameObject.CompareTag("Player"))
+            {   
+                GetComponent<PlayerManager>().ChangeState(PlayerState.stagger);                
+            }
+
             isInvincible = true;
             Invoke("Vulnerable", flashWhiteDurration);
-            Interruption();
+            //Interruption();
             healthCurrent -= damageAmount;
             if (healthCurrent <= 0)
             {
@@ -83,10 +88,10 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    public void Interruption()
-    {
-        animator.ResetTrigger("Attack");        
-    }
+    //public void Interruption()
+    //{
+    //    animator.ResetTrigger("Attack");        
+    //}
 
     void Vulnerable()
     {
@@ -106,6 +111,7 @@ public class HealthManager : MonoBehaviour
         {
             // I only want the sprite flash on the player when he dies.
             flashWhite.FlashWhiteCalled();
+            GetComponent<PlayerManager>().Death();
             GetComponent<Rigidbody2D>().isKinematic = true;
             return;
         }
