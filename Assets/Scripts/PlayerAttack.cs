@@ -11,13 +11,15 @@ public class PlayerAttack : MonoBehaviour
     //float attackRange = .5f;
     //float knockbackStrength = 10f;
     //float knockbackTime = .1f; 
+    GameObject arrowPrefab;
 
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
+        arrowPrefab = Resources.Load("ArrowPrefab", typeof(GameObject)) as GameObject;
     }
 
-    public void PlayerAttackCalled(LayerMask hitLayers, Transform attackPoint, int attackDamage, float attackRange, float knockbackStrength, float knockbackTime)
+    public void PlayerMeeleAttackCalled(LayerMask hitLayers, Transform attackPoint, int attackDamage, float attackRange, float knockbackStrength, float knockbackTime)
     {
         Collider2D[] hitRegistered = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, hitLayers);
 
@@ -29,28 +31,23 @@ public class PlayerAttack : MonoBehaviour
 
             if (rb != null)
             {
-                print("Knockback collision has been called on " + hit.gameObject.name);
-                rb.GetComponent<EnemyBaseClass>().currentState = EnemyState.stagger;
-                                        
-                Vector2 direction = hit.transform.position - transform.position;
-                //direction.y = 0;
-
+                EnemyBaseClass ebc = rb.GetComponent<EnemyBaseClass>();
+                ebc.ChangeState(EnemyState.stagger);                                        
+                Vector2 direction = hit.transform.position - transform.position;                
                 rb.AddForce(direction.normalized * knockbackStrength, ForceMode2D.Impulse);
-                StartCoroutine(Knocked(rb, knockbackTime));
+                ebc.ChangeState(EnemyState.idle, knockbackTime);
             }
         }
     }
 
-    private IEnumerator Knocked(Rigidbody2D enemy, float knockbackTime)
-    {
-        if (enemy != null)
-        {
-            yield return new WaitForSeconds(knockbackTime);
-            enemy.velocity = Vector2.zero;
-            enemy.GetComponent<EnemyBaseClass>().currentState = EnemyState.idle;
-        }
+    public void PlayerRangedAttackCalled(LayerMask hitLayers, Transform attackPoint, int attackDamage, float attackRange, float knockbackStrength, float knockbackTime, float arrowFlytime)
+    {     
+        GameObject newArrow = Instantiate(arrowPrefab, attackPoint);
+        Arrow arrow = newArrow.GetComponent<Arrow>();
+        arrow.transform.parent = null;
+        arrow.tag = "PlayerWeapon";
+        arrow.ArrowLaunch(hitLayers, attackPoint, attackDamage, attackRange, knockbackStrength, knockbackTime, arrowFlytime);
     }
-
 
     private void SoundCue()
     {

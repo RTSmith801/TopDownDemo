@@ -38,10 +38,10 @@ public class HealthManager : MonoBehaviour
     {
         if (!isInvincible && isAlive)
         {
-            if (gameObject.CompareTag("Player"))
-            {   
-                GetComponent<PlayerManager>().ChangeState(PlayerState.stagger);             
-            }
+            //if (gameObject.CompareTag("Player"))
+            //{
+            //    PlayerManager pm = GetComponent<PlayerManager>();                
+            //}
 
             isInvincible = true;
             Invoke("Vulnerable", flashWhiteDurration);

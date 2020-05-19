@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/PlayerControls.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Scripts/PlayerControls.inputactions'
 
 using System;
 using System.Collections;
@@ -102,6 +102,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""name"": ""RightBumper"",
                     ""type"": ""Button"",
                     ""id"": ""6ed38f16-3fce-41f3-8f54-69a51246f6ad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""b8306eac-b238-43b7-9e41-6b90073dc037"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -239,6 +247,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""RightBumper"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cf1f25e-8e7b-450a-9b01-c076fc1bf86d"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -258,6 +277,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Gameplay_LeftBumper = m_Gameplay.FindAction("LeftBumper", throwIfNotFound: true);
         m_Gameplay_RightTrigger = m_Gameplay.FindAction("RightTrigger", throwIfNotFound: true);
         m_Gameplay_RightBumper = m_Gameplay.FindAction("RightBumper", throwIfNotFound: true);
+        m_Gameplay_Select = m_Gameplay.FindAction("Select", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -318,6 +338,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_LeftBumper;
     private readonly InputAction m_Gameplay_RightTrigger;
     private readonly InputAction m_Gameplay_RightBumper;
+    private readonly InputAction m_Gameplay_Select;
     public struct GameplayActions
     {
         private @PlayerControls m_Wrapper;
@@ -333,6 +354,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @LeftBumper => m_Wrapper.m_Gameplay_LeftBumper;
         public InputAction @RightTrigger => m_Wrapper.m_Gameplay_RightTrigger;
         public InputAction @RightBumper => m_Wrapper.m_Gameplay_RightBumper;
+        public InputAction @Select => m_Wrapper.m_Gameplay_Select;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -375,6 +397,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @RightBumper.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRightBumper;
                 @RightBumper.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRightBumper;
                 @RightBumper.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRightBumper;
+                @Select.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
+                @Select.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
+                @Select.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -412,6 +437,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @RightBumper.started += instance.OnRightBumper;
                 @RightBumper.performed += instance.OnRightBumper;
                 @RightBumper.canceled += instance.OnRightBumper;
+                @Select.started += instance.OnSelect;
+                @Select.performed += instance.OnSelect;
+                @Select.canceled += instance.OnSelect;
             }
         }
     }
@@ -429,5 +457,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnLeftBumper(InputAction.CallbackContext context);
         void OnRightTrigger(InputAction.CallbackContext context);
         void OnRightBumper(InputAction.CallbackContext context);
+        void OnSelect(InputAction.CallbackContext context);
     }
 }

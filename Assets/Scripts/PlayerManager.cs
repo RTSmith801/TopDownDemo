@@ -3,10 +3,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public enum PlayerState { idle, walk, attack, stagger, dead, roomChange }
+public enum PlayerModel { melee, ranger }
 
 public class PlayerManager : MonoBehaviour
 {
     public PlayerState currentState;
+    public PlayerModel currentModel;
 
     GameManager gm;
     Rigidbody2D rb;
@@ -33,6 +35,7 @@ public class PlayerManager : MonoBehaviour
     public float attackRange = 1f;
     public float knockbackStrength = 10f;
     public float knockbackTime = .1f;
+    public float arrowFlytime = 5f;
 
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;
@@ -60,6 +63,8 @@ public class PlayerManager : MonoBehaviour
 
         XBoxControllerInput.Gameplay.X.performed += ctx => PlayerAttackCalled();
         XBoxControllerInput.Gameplay.RightBumper.performed += ctx => PlayerAttackCalled();
+
+        XBoxControllerInput.Gameplay.Select.performed += ctx => ChangeAttackStyle();
     }
 
     private void OnEnable()
@@ -76,6 +81,7 @@ public class PlayerManager : MonoBehaviour
     {
         // This is the only place the current state should be manually set. All other changes should be called through ChangeState().
         currentState = PlayerState.idle;
+        currentModel = PlayerModel.melee;
         gm = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -85,7 +91,24 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        GetControllerInput();        
+        AltControllerInput();
+        GetControllerInput();
+    }
+
+    private void AltControllerInput()
+    {
+        leftStick.x = Input.GetAxisRaw("Horizontal");
+        leftStick.y = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PlayerAttackCalled();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ChangeAttackStyle();
+        }
     }
 
     private void GetControllerInput()
@@ -120,8 +143,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         else
-        {
-            print("Joysticks are reading the same? " + lastLookDirection);
+        {   
             lastLookDirection.Normalize();
         }
     }
@@ -158,8 +180,19 @@ public class PlayerManager : MonoBehaviour
         {
             ChangeState(PlayerState.attack);
             animator.SetTrigger("Attack");
-            pa.PlayerAttackCalled(hitLayers, attackPoint, attackDamage, attackRange, knockbackStrength, knockbackTime);            
             nextAttackTime = Time.time + attackRate;
+
+            if (currentModel == PlayerModel.melee)
+            {
+                pa.PlayerMeeleAttackCalled(hitLayers, attackPoint, attackDamage, attackRange, knockbackStrength, knockbackTime);
+                return;
+            }
+
+            else if (currentModel == PlayerModel.ranger)
+            {
+                pa.PlayerRangedAttackCalled(hitLayers, attackPoint, attackDamage, attackRange, knockbackStrength, knockbackTime, arrowFlytime);
+                return;
+            }
         }
     }
 
@@ -180,8 +213,50 @@ public class PlayerManager : MonoBehaviour
         if (currentState == PlayerState.dead)
             return;
 
+        if (newState == PlayerState.idle)
+            rb.velocity = Vector2.zero;
+
         if (currentState != newState)
             currentState = newState;
+    }
+
+    public void ChangeState(PlayerState newState, float timeToWait)
+    {
+        StartCoroutine(DelayChangeState(newState, timeToWait));
+    }
+
+    private IEnumerator DelayChangeState(PlayerState newState, float timeToWait)
+    { 
+        yield return new WaitForSeconds(timeToWait);        
+        ChangeState(newState);      
+    }
+
+    void ChangeAttackStyle()
+    {
+        if (currentState == PlayerState.idle || currentState == PlayerState.walk)
+        {
+            //print(animator.runtimeAnimatorController.name);
+            RuntimeAnimatorController currentController = animator.runtimeAnimatorController;
+            if (currentController.name == "Player-Ranger" && currentModel == PlayerModel.ranger)
+            {
+                animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Player-Melee");
+                currentModel = PlayerModel.melee;
+            }
+
+            else if (currentController.name == "Player-Melee" && currentModel == PlayerModel.melee)
+            {
+                animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Player-Ranger");
+                currentModel = PlayerModel.ranger;
+            }
+
+            else
+            {                
+                print("How did we get here? " + animator.runtimeAnimatorController.name);
+                return;
+            }
+            // sound queue?
+            // player change animation?
+        }
     }
 
     private void OnDrawGizmosSelected()

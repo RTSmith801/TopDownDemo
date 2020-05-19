@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemyState { idle, walk, attack, stagger}
+public enum EnemyState { idle, walk, attack, stagger, dead}
 
 public class EnemyBaseClass : MonoBehaviour
 {
@@ -128,13 +128,32 @@ public class EnemyBaseClass : MonoBehaviour
     
     public void Death()
     {
+        rb.velocity = Vector2.zero;
         isAlive = false;        
     }
 
-    void ChangeState(EnemyState newState)
+    public void ChangeState(EnemyState newState)
     {
+        // Currently, once player is dead, they can only have their state changed by restarting.        
+        if (currentState == EnemyState.dead)        
+            return;
+
+        if (newState == EnemyState.idle)
+            rb.velocity = Vector2.zero;
+
         if (currentState != newState)
             currentState = newState;
+    }
+
+    public void ChangeState(EnemyState newState, float timeToWait)
+    {
+        StartCoroutine(DelayChangeState(newState, timeToWait));
+    }
+
+    private IEnumerator DelayChangeState(EnemyState newState, float timeToWait)
+    {
+        yield return new WaitForSeconds(timeToWait);
+        ChangeState(newState);
     }
 
     private void OnDrawGizmosSelected()

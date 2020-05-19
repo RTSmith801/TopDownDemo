@@ -37,6 +37,19 @@ public class GameManager : MonoBehaviour
         XBoxControllerInput.Gameplay.Disable();
     }
 
+    private void Update()
+    {
+        AltControls();
+    }
+
+    void AltControls()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ReloadScene();
+        }
+    }
+
 
     private void Assignments()
     {
