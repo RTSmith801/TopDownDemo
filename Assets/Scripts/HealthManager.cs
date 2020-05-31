@@ -13,6 +13,7 @@ public class HealthManager : MonoBehaviour
     [Header("Health Related Stats")]
     public bool isInvincible;
     public bool isAlive;
+    bool isPlayer;
     public int healthMax = 3;
     public int healthCurrent;
 
@@ -23,7 +24,9 @@ public class HealthManager : MonoBehaviour
         col = GetComponent<CircleCollider2D>();
         animator = GetComponent<Animator>();
         flashWhite = GetComponent<FlashWhite>();
-        flashWhiteDurration = flashWhite.flashWhiteDurration;        
+        flashWhiteDurration = flashWhite.flashWhiteDurration;
+        if (gameObject.CompareTag("Player"))
+            isPlayer = true;        
     }
 
     private void OnEnable()
@@ -31,22 +34,23 @@ public class HealthManager : MonoBehaviour
         isAlive = true;
         animator.SetBool("isAlive", true);
         isInvincible = false;
-        healthCurrent = healthMax;        
+        healthCurrent = healthMax;
+        if (isPlayer)
+            gm.UIHealthUpdate(healthCurrent, healthMax);
     }
     
     public void TakeDamage(int damageAmount)
     {
         if (!isInvincible && isAlive)
         {
-            //if (gameObject.CompareTag("Player"))
-            //{
-            //    PlayerManager pm = GetComponent<PlayerManager>();                
-            //}
-
             isInvincible = true;
             Invoke("Vulnerable", flashWhiteDurration);
             //Interruption();
             healthCurrent -= damageAmount;
+
+            if (isPlayer)            
+                gm.UIHealthUpdate(healthCurrent, healthMax);            
+
             if (healthCurrent <= 0)
             {
                 Die();
@@ -107,7 +111,7 @@ public class HealthManager : MonoBehaviour
         // Death effect & animation
 
         // The following will only occur if death is not on Player.
-        if (gameObject.CompareTag("Player"))
+        if (isPlayer)
         {
             // I only want the sprite flash on the player when he dies.
             flashWhite.FlashWhiteCalled();

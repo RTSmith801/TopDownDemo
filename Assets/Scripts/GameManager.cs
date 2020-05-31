@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,11 +12,20 @@ public class GameManager : MonoBehaviour
     public float fadeSpeed = .7f;
     public List<GameObject> enemies;
     public List<GameObject> sceneTransitions;
-
+        
     public GameObject player;
 
     // XBox Controller Settings
     PlayerControls XBoxControllerInput;
+
+    // UI Settings
+    [Header ("UI Settings")]
+    //public int health;
+    //public int numOfHearts;
+
+    public Image[] hearts;
+    public Sprite fullHeart;
+    public Sprite emptyHeart;
 
     // Use Awake(), OnEnable(), and OnDisable() to identify controller input
     private void Awake()
@@ -39,7 +49,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        AltControls();
+        AltControls();        
     }
 
     void AltControls()
@@ -47,6 +57,23 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ReloadScene();
+        }
+    }
+
+    public void UIHealthUpdate(int health, int numOfHearts)
+    {
+        for (int i = 0; i < hearts.Length; i++)
+        {            
+            if (i < health)
+                hearts[i].sprite = fullHeart;
+            else
+                hearts[i].sprite = emptyHeart;
+
+            // Hides heart containers not in use.
+            if (i < numOfHearts)            
+                hearts[i].enabled = true;            
+            else
+                hearts[i].enabled = false;
         }
     }
 
